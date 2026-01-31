@@ -1,0 +1,116 @@
+.widget-header,
+.widget-tabs {
+  color: var(--hex-brand-accent-1);
+  background: var(--hex-brand-main-1);
+}
+
+#widget-title {
+  color: var(--hex-brand-accent-6);
+}
+
+/* tabs */
+.tab-button {
+  color: var(--hex-brand-accent-6);
+  background: var(--hex-brand-main-1);
+  opacity: 0.5;
+}
+
+.tab-button:hover {
+  background: var(--hex-brand-main-6);
+  opacity: 0.75;
+}
+
+.tab-button.is-active {
+  opacity: 1;
+  background: var(--hex-brand-main-6);
+}
+
+/* buttons */
+.btn {
+  border: none;
+
+  color: var(--hex-brand-accent-6);
+  background: var(--hex-brand-main-1);
+}
+
+.btn:hover {
+  opacity: 0.75;
+  background: var(--hex-brand-main-6);
+}
+
+.btn:active {
+  opacity: 1;
+}
+
+/* settings/help icons */
+.settings .material-symbols-rounded {
+  color: var(--hex-brand-accent-3);
+  font-variation-settings:
+    "FILL" 1,
+    "wght" 400,
+    "GRAD" 0,
+    "opsz" 24;
+}
+
+.help .material-symbols-rounded {
+  color: var(--hex-brand-accent-3);
+  font-variation-settings:
+    "FILL" 1,
+    "wght" 800,
+    "GRAD" 0,
+    "opsz" 24;
+}
+
+.settings:hover .material-symbols-rounded {
+  text-shadow: 0 0 10px var(--hex-brand-main-8);
+  transition: all 0.3s ease;
+}
+
+/* search */
+#widget-search {
+  background-color: var(--hex-brand-accent-4);
+  color: var(--hex-brand-main-1);
+  opacity: 0.5;
+
+  border-color: var(--hex-brand-main-2);
+
+  transition: all 0.2s ease;
+}
+
+#widget-search::placeholder {
+  color: var(--hex-brand-main-1);
+  opacity: 0.75;
+}
+
+#widget-search:hover:not(:focus-visible) {
+  box-shadow: 0 0 8px var(--hex-brand-accent-4);
+}
+
+#widget-search:focus-visible {
+  opacity: 1;
+}
+
+.widget-search-wrap .search-icon {
+  color: var(--hex-brand-main-1);
+  opacity: 0.5;
+  z-index: 10;
+}
+
+.widget-search-wrap:focus-within .search-icon {
+  opacity: 1;
+}
+
+/* export dropdown */
+.export-menu {
+  background: var(--hex-brand-accent-8);
+  border-color: var(--hex-brand-main-3);
+}
+
+.export-option {
+  background: var(--hex-brand-accent-4);
+  color: var(--hex-brand-main-1);
+}
+
+.export-option:hover {
+  background: var(--hex-brand-accent-9);
+}

@@ -1,0 +1,116 @@
+/* -------------------------------------------------------------------------- */
+/* WIDGET BASE: RESET + SHELL + GENERIC HELPERS                                */
+/* -------------------------------------------------------------------------- */
+
+:host {
+  all: initial;
+}
+
+.widget {
+  font-family:
+    "Inter",
+    system-ui,
+    -apple-system,
+    Segoe UI,
+    Roboto,
+    Arial;
+
+  display: flex;
+  flex-direction: column;
+
+  position: fixed;
+  right: 0;
+  top: 50%;
+  transform: translateY(-50%) translateX(0);
+  z-index: 999999;
+
+  border: 1px solid;
+  border-radius: 12px;
+
+  overflow: hidden;
+
+  transition: all 0.3s ease-in-out;
+
+  width: min(780px, 92vw);
+  height: 85vh;
+}
+
+.widget.is-hidden {
+  transform: translateX(110%) translateY(-50%);
+  pointer-events: none;
+}
+
+/* headings */
+h1,
+h2,
+h3,
+.panel-title,
+.section-title,
+.table-header {
+  font-family: "Manrope", "Inter", system-ui;
+  font-weight: 600;
+}
+
+/* icons */
+.material-symbols-rounded {
+  font-variation-settings:
+    "FILL" 0,
+    "wght" 400,
+    "GRAD" 0,
+    "opsz" 24;
+}
+
+.widget.is-settings-view .settings .material-symbols-rounded {
+  font-variation-settings:
+    "FILL" 1,
+    "wght" 400,
+    "GRAD" 0,
+    "opsz" 24;
+}
+
+/* inputs */
+input,
+input:focus,
+input:focus-visible {
+  outline: none;
+}
+
+/* generic helpers */
+.pill {
+  display: inline-block;
+
+  padding: 2px 6px;
+
+  border: 1px solid;
+  border-radius: 999px;
+
+  font-size: 11px;
+}
+
+.muted {
+  opacity: 0.75;
+}
+
+/* body container */
+.widget-body,
+.widget-footer {
+  border: 2px solid;
+  border-top: none;
+}
+
+.widget-body {
+  flex: 1;
+  min-height: 0;
+  position: relative;
+
+  overflow: auto;
+}
+
+/* panel switching */
+.widget-panel {
+  display: none;
+}
+
+.widget-panel.is-active {
+  display: block;
+}

@@ -1,0 +1,141 @@
+/* -------------------------------------------------------------------------- */
+/* COURSE LIST VIEW: TABLE BASE STYLES                                         */
+/* -------------------------------------------------------------------------- */
+
+[data-panel="list"] table {
+  width: 100%;
+
+  border-collapse: collapse;
+  border-bottom: none;
+
+  font-size: 12px;
+  font-weight: 500;
+}
+
+[data-panel="list"] th,
+[data-panel="list"] td {
+  padding: 6px;
+
+  border-bottom: 1px solid;
+  border-right: 1px solid;
+
+  vertical-align: middle;
+}
+
+[data-panel="list"] th:last-child,
+[data-panel="list"] td:last-child {
+  border-right: none;
+}
+
+[data-panel="list"] th {
+  position: sticky;
+  top: -1px;
+
+  font-weight: 700;
+
+  cursor: pointer;
+}
+
+[data-panel="list"] tr {
+  border-left: 1px solid;
+  border-right: 1px solid;
+}
+
+[data-panel="list"] th {
+  font-size: 12px;
+  text-align: center;
+
+  border-left: 1px solid;
+  border-right: 1px solid;
+  border-top: none;
+  border-bottom: none;
+}
+
+[data-panel="list"] td:nth-child(5) {
+  padding-top: 9.5px;
+}
+
+[data-panel="list"] tr td:nth-child(1),
+[data-panel="list"] tr th:nth-child(1) {
+  border-left: none;
+}
+
+[data-panel="list"] tr td:nth-child(6),
+[data-panel="list"] tr th:nth-child(6) {
+  border-right: none;
+}
+
+[data-panel="list"] tr:last-child {
+  border-bottom: 3px solid;
+}
+
+[data-panel="list"] tr td:nth-child(1),
+[data-panel="list"] tr td:nth-child(2),
+[data-panel="list"] tr td:nth-child(3),
+[data-panel="list"] tr td:nth-child(4),
+[data-panel="list"] tr td:nth-child(5),
+[data-panel="list"] tr td:nth-child(6) {
+  text-align: center;
+}
+
+[data-panel="list"] th:nth-child(1) {
+  width: 175px;
+} /* Title */
+
+[data-panel="list"] th:nth-child(2) {
+  width: 150px;
+} /* Code */
+
+[data-panel="list"] th:nth-child(3) {
+  width: 10px;
+} /* Sect */
+
+[data-panel="list"] th:nth-child(4) {
+  width: 100px;
+} /* Instructor */
+
+[data-panel="list"] th:nth-child(5) {
+  width: 450px;
+} /* Meeting */
+
+[data-panel="list"] th:nth-child(6) {
+  width: 84px;
+} /* class-type */
+
+/* -------------------------------------------------------------------------- */
+/* COURSE LIST VIEW: MEETING CELL CONTENT (PILLS + SUBTEXT)                    */
+/* -------------------------------------------------------------------------- */
+
+.title-main {
+  white-space: pre-line;
+}
+
+.days {
+  white-space: nowrap;
+}
+
+.meeting {
+  line-height: 1.4;
+}
+
+.meeting-pill {
+  display: inline-block;
+
+  padding: 4px 10px;
+  margin-bottom: 4px;
+
+  border: 1px solid;
+  border-radius: 999px;
+
+  font-size: 11px;
+  white-space: nowrap;
+}
+
+.meeting-sub,
+.meeting-location {
+  white-space: pre-line; /* keeps your \n */
+}
+
+.meeting-sub {
+  font-size: 11px;
+}

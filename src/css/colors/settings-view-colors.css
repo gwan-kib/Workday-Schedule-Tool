@@ -1,0 +1,23 @@
+.widget-panel[data-panel="settings"] .settings-panel {
+  color: var(--hex-brand-main-1);
+}
+
+.widget-panel[data-panel="settings"] .settings-field .link {
+  background: var(--hex-brand-accent-5);
+  color: var(--hex-brand-main-1);
+
+  border-color: var(--hex-brand-accent-11);
+}
+
+.widget-panel[data-panel="settings"] .settings-field .link .material-symbols-rounded {
+  color: var(--hex-brand-main-1);
+}
+
+.widget-panel[data-panel="settings"] .settings-field .link:hover {
+  background: var(--hex-neutral-1);
+  border-color: var(--hex-brand-accent-9);
+}
+
+.widget-panel[data-panel="settings"] .settings-field .link:focus-visible {
+  outline-color: var(--hex-brand-accent-9);
+}

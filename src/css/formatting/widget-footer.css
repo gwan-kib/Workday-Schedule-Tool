@@ -1,0 +1,34 @@
+/* -------------------------------------------------------------------------- */
+/* WIDGET FOOTER                                                              */
+/* -------------------------------------------------------------------------- */
+
+.widget-footer {
+  display: flex;
+  align-items: center;
+
+  flex-shrink: 0;
+  flex-wrap: nowrap;
+
+  gap: 8px;
+
+  padding: 8px 12px;
+  border-top: 1px solid;
+
+  font-size: 14px;
+
+  border-bottom-left-radius: inherit;
+  border-bottom-right-radius: inherit;
+}
+
+.widget-conflicts {
+  margin-right: auto;
+  font-size: 12px;
+}
+
+.widget-conflicts.is-hover {
+  font-weight: 800;
+}
+
+.footer-tip {
+  margin-left: auto;
+}

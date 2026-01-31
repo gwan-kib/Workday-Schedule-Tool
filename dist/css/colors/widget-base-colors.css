@@ -1,0 +1,23 @@
+.widget {
+  color: var(--hex-brand-main-1);
+  background: var(--hex-brand-accent-7);
+  border-color: var(--hex-brand-main-1) !important;
+}
+
+.widget-body,
+.widget-footer {
+  border-color: var(--hex-brand-main-1);
+}
+
+.pill {
+  border-color: var(--hex-brand-accent-12);
+}
+
+.muted {
+  color: var(--hex-brand-main-7);
+}
+
+.widget :focus-visible {
+  outline: none;
+  box-shadow: none;
+}

@@ -1,0 +1,36 @@
+/* -------------------------------------------------------------------------- */
+/* THEME TOKENS                                                               */
+/* -------------------------------------------------------------------------- */
+
+:root,
+:host {
+  --hex-brand-main-1: #401d81;
+  --hex-brand-main-2: #6b4fd6;
+  --hex-brand-main-3: #6e50c7;
+  --hex-brand-main-4: #8f6bce;
+  --hex-brand-main-5: #906acc;
+  --hex-brand-main-6: #916ccc;
+  --hex-brand-main-7: #9583d0;
+  --hex-brand-main-8: #ae7aff;
+  --hex-brand-accent-1: #e4d6ff;
+  --hex-brand-accent-2: #e5d6fd;
+  --hex-brand-accent-3: #e6d3f5;
+  --hex-brand-accent-4: #ede2ff;
+  --hex-brand-accent-5: #f7f2ff;
+  --hex-brand-accent-6: #fbf8ff;
+  --hex-brand-accent-7: #fbf9ff;
+  --hex-brand-accent-8: #fdf7ff;
+  --hex-brand-accent-9: #cdadff;
+  --hex-brand-accent-10: #cdaefc;
+  --hex-brand-accent-11: #cfd6e4;
+  --hex-brand-accent-12: #e0e7ff;
+  --hex-neutral-1: #ffffff;
+  --hex-neutral-2: #f9fafb;
+  --hex-neutral-3: #f3f4f6;
+  --hex-neutral-4: #e5e7eb;
+  --hex-neutral-5: #d1d5db;
+  --hex-neutral-6: #6b7280;
+  --hex-danger-1: #b91c1c;
+  --hex-danger-2: #ff6666;
+  --hex-shadow-1: #000000;
+}

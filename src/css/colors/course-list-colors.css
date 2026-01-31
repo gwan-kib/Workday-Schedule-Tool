@@ -1,0 +1,9 @@
+.meeting-pill {
+  color: var(--hex-brand-main-1);
+  background: var(--hex-brand-accent-1);
+}
+
+[data-panel="list"] th {
+  color: var(--hex-brand-accent-1);
+  background: var(--hex-brand-main-1);
+}

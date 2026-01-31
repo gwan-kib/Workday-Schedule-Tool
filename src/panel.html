@@ -1,0 +1,176 @@
+<head>
+  <link
+    rel="stylesheet"
+    href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200"
+  />
+</head>
+
+<button id="floating-button" type="button">
+  <span class="floating-button__icon" aria-hidden="true">▶</span>
+  <span class="material-symbols-rounded">calendar_month</span>
+</button>
+
+<div class="widget is-hidden">
+  <div class="widget-header">
+    <span id="widget-title">Workday - Schedule Tool</span>
+
+    <span class="spacer"></span>
+    <div class="export-dropdown" id="widget-export">
+      <button
+        class="btn export-summary"
+        id="widget-export-button"
+        type="button"
+        aria-haspopup="menu"
+        aria-expanded="false"
+      >
+        <span class="material-symbols-rounded export-icon" aria-hidden="true"> ios_share </span>
+        <span class="text">Export</span>
+        <span class="material-symbols-rounded" aria-hidden="true">expand_more</span>
+      </button>
+      <div class="export-menu" id="widget-export-menu" role="menu">
+        <button class="export-option" type="button" data-export="ics">Download .ics</button>
+        <button class="export-option" type="button" data-export="png">More options soon...</button>
+      </div>
+    </div>
+    <button class="btn help" type="button" aria-label="Help">
+      <span class="material-symbols-rounded"> help </span><span class="text">Help</span>
+    </button>
+    <button class="btn settings" type="button" aria-label="Settings">
+      <span class="material-symbols-rounded">settings</span>
+    </button>
+  </div>
+  <div class="widget-tabs">
+    <button class="tab-button is-active" type="button" data-panel="list">
+      <span class="text">Course List</span>
+    </button>
+    <button class="tab-button" type="button" data-panel="schedule">
+      <span class="text">Schedule View</span>
+    </button>
+    <div class="widget-search-wrap">
+      <span class="material-symbols-rounded search-icon" aria-hidden="true"> search </span>
+      <input id="widget-search" placeholder="Course Name / Instructor / Week Day…" />
+    </div>
+    <span class="spacer"></span>
+    <button id="widget-refresh" class="btn" type="button">
+      <span class="material-symbols-rounded"> refresh </span>
+    </button>
+    <button id="widget-save-schedule" class="btn schedule-save-button" type="button">
+      <span class="material-symbols-rounded save-icon"> save_as </span>
+    </button>
+    <details class="schedule-saved-dropdown" id="schedule-saved-dropdown">
+      <summary class="schedule-saved-summary">
+        <span class="text">Schedules</span>
+        <span class="material-symbols-rounded" aria-hidden="true">expand_more</span>
+      </summary>
+      <div class="schedule-saved-menu" id="schedule-saved-menu"></div>
+    </details>
+  </div>
+  <div class="widget-body">
+    <div class="widget-panel is-active" data-panel="list">
+      <table>
+        <thead>
+          <tr>
+            <th data-key="title">Title</th>
+            <th data-key="code">Class Code</th>
+            <th data-key="section">Section</th>
+            <th data-key="instructor">Instructor</th>
+            <th data-key="meeting">Meeting Times</th>
+            <th data-key="instructionalFormat">Class Type</th>
+          </tr>
+        </thead>
+
+        <tbody id="widget-tbody"></tbody>
+      </table>
+    </div>
+    <div class="widget-panel" data-panel="schedule">
+      <div class="schedule-controls">
+        <div class="schedule-semester-buttons">
+          <button class="semester-button is-active" type="button" data-semester="first">
+            <span class="text">Semester 1</span>
+          </button>
+          <button class="semester-button" type="button" data-semester="second">
+            <span class="text">Semester 2</span>
+          </button>
+        </div>
+      </div>
+      <div class="schedule-grid" id="schedule-grid"></div>
+    </div>
+    <div class="widget-panel" data-panel="settings">
+      <div class="settings-panel">
+        <h2>Settings</h2>
+        <p>Customizable options will be added in future updates.</p>
+        <div class="settings-box">
+          <label class="settings-field">
+            <a
+              class="link"
+              href="https://github.com/gwan-kib/Workday-Schedule-Tool"
+              target="_blank"
+              rel="noopener noreferrer"
+              >GitHub Repo<span class="material-symbols-rounded">arrow_outward</span></a
+            >
+          </label>
+          <label class="settings-field">
+            <a
+              class="link"
+              href="https://www.linkedin.com/in/gwantanakiboigo/"
+              target="_blank"
+              rel="noopener noreferrer"
+              >LinkedIn<span class="material-symbols-rounded">arrow_outward</span></a
+            >
+          </label>
+        </div>
+      </div>
+    </div>
+    <div class="widget-panel" data-panel="help">
+      <div class="help-panel">
+        <h2>Help</h2>
+        <p>Need a hand?</pp>
+        <div class="help-box">
+          <label class="settings-field">
+            <a
+              class="link"
+              href="https://docs.google.com/document/d/1D0YqHct_d3rR8WtlkHF9Dybqb3mFB7Wka0ZWsFZOda8/edit?tab=t.0"
+              role="button"
+              target="_blank"
+              rel="noopener noreferrer"
+              >Tutorials<span class="material-symbols-rounded">arrow_outward</span></a
+            >
+          </label>
+        </div>
+        <p>Extension not working properly? Found a bug? Feel free to send me an email: gwantanak.3@gmail.com</p>
+      </div>
+    </div>
+    <div class="schedule-modal is-hidden" id="schedule-save-modal" aria-hidden="true">
+      <div class="schedule-modal-backdrop" data-action="close"></div>
+      <div class="dialog-container">
+        <div class="schedule-modal-dialog" role="dialog" aria-modal="true" aria-labelledby="schedule-modal-title">
+          <div class="schedule-modal-header">
+            <h3 class="schedule-modal-title" id="schedule-modal-title">Save Schedule</h3>
+            <button class="schedule-modal-close" type="button" data-action="close">
+              <span class="material-symbols-rounded" aria-hidden="true">close</span>
+            </button>
+          </div>
+          <p class="schedule-modal-message" id="schedule-modal-message">Name this schedule so you can find it later.</p>
+          <label class="schedule-modal-field" id="schedule-modal-field">
+            <span class="schedule-modal-label">Schedule name</span>
+            <input
+              id="schedule-modal-input"
+              class="schedule-modal-input"
+              type="text"
+              placeholder="e.g. Fall semester plan"
+            />
+          </label>
+          <div class="schedule-modal-actions">
+            <button class="btn schedule-modal-cancel" type="button" data-action="cancel">Cancel</button>
+            <button class="btn schedule-modal-confirm" type="button" data-action="confirm">Save</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="widget-footer">
+    <span id="widget-conflicts" class="widget-conflicts"></span>
+    <span class="spacer"></span>
+    <span class="footer-tip"><span class="muted">Tip: Click headers to sort</span></span>
+  </div>
+</div>

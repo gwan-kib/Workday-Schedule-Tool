@@ -1,0 +1,26 @@
+{
+  "name": "workday-extension",
+  "version": "1.0.0",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "build": "vite build -c vite.background.config.js && vite build -c vite.content.config.js",
+    "dev": "vite build --watch"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/gwan-kib/Workday-Extension.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/gwan-kib/Workday-Extension/issues"
+  },
+  "homepage": "https://github.com/gwan-kib/Workday-Extension#readme",
+  "description": "",
+  "devDependencies": {
+    "vite": "^7.3.0",
+    "vite-plugin-static-copy": "^3.1.4"
+  }
+}

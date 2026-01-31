@@ -1,0 +1,340 @@
+/* -------------------------------------------------------------------------- */
+/* WIDGET HEADER                                                               */
+/* -------------------------------------------------------------------------- */
+
+.widget-header {
+  display: flex;
+  align-items: center;
+  padding: 10px 12px;
+  gap: 6px;
+}
+
+#widget-title {
+  font-weight: 700;
+  font-size: 25px;
+
+  color: rgb(var(--rgb-brand-accent-6));
+}
+
+/* Header buttons sizing/align */
+.widget-header .btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+
+  padding: 0 12px; /* horizontal only */
+  line-height: 1; /* kill text offset */
+}
+
+.widget-header .text {
+  font-size: 14px; /* keep as px; your old file missed unit */
+}
+
+/* Settings icon button style */
+.settings.btn {
+  background: none;
+  padding: 0;
+}
+
+.settings {
+  display: inline-flex;
+  height: 32px;
+  width: 32px;
+  justify-content: center;
+  align-items: center;
+}
+
+/* -------------------------------------------------------------------------- */
+/* TABS ROW (Course List / Schedule View / Search / Actions)                   */
+/* -------------------------------------------------------------------------- */
+
+.widget-tabs {
+  display: flex;
+  gap: 10px;
+  height: 30px;
+
+  align-items: center;
+  padding: 10px 12px;
+
+  border: none;
+  border-bottom: 2px solid var(--hex-brand-accent-6);
+  border-top: 1px solid var(--hex-brand-accent-6);
+}
+
+/* Tab buttons */
+.tab-button {
+  padding: 6px 12px;
+
+  border: none;
+  border-radius: 999px;
+
+  font-size: 14px;
+  font-weight: 600;
+
+  cursor: pointer;
+
+  height: 28px;
+  transition: all 0.3s ease;
+}
+
+.tab-button .text {
+  display: inline-block;
+  transition: all 0.3s ease;
+}
+
+.tab-button:hover:not(.is-active) .text {
+  opacity: 1;
+}
+
+/* Search */
+.widget-search-wrap {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+}
+
+.widget-search-wrap .search-icon {
+  position: absolute;
+  left: 10px;
+  font-size: 18px;
+  pointer-events: none;
+
+  transition: all 0.2s ease;
+}
+
+#widget-search {
+  width: 230px;
+
+  padding: 6px 10px;
+  padding-left: 32px;
+
+  border: 1px solid var(--hex-neutral-4);
+  border-radius: 999px;
+
+  font-size: 12px;
+  font-weight: 600;
+
+  transition:
+    box-shadow 150ms ease,
+    background-color 150ms ease;
+}
+
+/* Refresh button */
+#widget-refresh {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 34px;
+  width: 34px;
+}
+
+#widget-refresh.rotate {
+  animation: spin360 0.4s ease-in-out;
+}
+
+@keyframes spin360 {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* Save schedule button */
+.schedule-save-button {
+  height: 30px;
+  padding: 6px 12px;
+  font-size: 13px;
+  white-space: nowrap;
+}
+
+#widget-save-schedule {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 34px;
+  width: 34px;
+}
+
+/* -------------------------------------------------------------------------- */
+/* EXPORT DROPDOWN                                                             */
+/* -------------------------------------------------------------------------- */
+
+.export-dropdown {
+  height: 32px;
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+}
+
+.export-summary {
+  height: 34px;
+  width: 115px;
+
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 3px;
+
+  font-size: 13px;
+  list-style: none;
+}
+
+.export-menu {
+  position: absolute;
+  top: calc(100% + 8px);
+  right: 0;
+
+  display: none;
+  flex-direction: column;
+  gap: 6px;
+
+  min-width: 160px;
+
+  padding: 8px;
+  border-radius: 12px;
+  border: 2px solid;
+  border: 1px solid var(--hex-neutral-4);
+}
+
+.export-dropdown.is-open .export-menu {
+  display: flex;
+}
+
+.export-option {
+  padding: 8px 10px;
+  border-radius: 10px;
+  border: none;
+
+  font-size: 12px;
+  font-weight: 600;
+
+  cursor: pointer;
+  text-align: left;
+
+  background: #ede2ff;
+}
+
+/* Help button */
+.help.btn {
+  height: 34px;
+  padding: 6px 12px;
+
+  font-size: 12px;
+  letter-spacing: 0.6px;
+
+  justify-content: center;
+  align-items: center;
+
+  display: flex;
+  gap: 3px;
+}
+
+/* -------------------------------------------------------------------------- */
+/* SCHEDULE SAVED DROPDOWN (lives in tabs row)                                 */
+/* -------------------------------------------------------------------------- */
+
+.schedule-saved-dropdown {
+  position: relative;
+  margin-left: auto;
+}
+
+.schedule-saved-summary {
+  display: inline-flex;
+  align-items: center;
+  padding: 0px 10px;
+  height: 28px;
+
+  border-radius: 999px;
+  border: none;
+
+  justify-content: center;
+  text-align: center;
+
+  font-size: 14px;
+  font-weight: 700;
+
+  cursor: pointer;
+  list-style: none;
+}
+
+.schedule-saved-summary::-webkit-details-marker {
+  display: none;
+}
+
+.schedule-saved-summary .text {
+  text-align: center;
+}
+
+.schedule-saved-menu {
+  position: absolute;
+  right: 0;
+  top: calc(100% + 8px);
+
+  min-width: 240px;
+  max-width: 320px;
+
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+
+  padding: 7px;
+  border-radius: 12px;
+  border: 2px;
+
+  z-index: 100;
+}
+
+.schedule-saved-card {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+
+  padding: 10px;
+  border-radius: 10px;
+}
+
+.schedule-saved-card-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.schedule-saved-title {
+  font-size: 14px;
+  font-weight: 700;
+}
+
+.schedule-saved-meta {
+  font-size: 12px;
+  opacity: 0.8;
+}
+
+.schedule-saved-actions {
+  display: flex;
+  gap: 8px;
+}
+
+.schedule-saved-action {
+  padding: 4px 8px;
+  border-radius: 999px;
+  border: none;
+
+  font-size: 12px;
+  font-weight: 600;
+
+  cursor: pointer;
+}
+
+.schedule-saved-empty {
+  font-size: 12px;
+  font-weight: 600;
+
+  padding: 8px;
+  border-radius: 10px;
+
+  text-align: center;
+  opacity: 0.7;
+}

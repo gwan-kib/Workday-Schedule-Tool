@@ -1,0 +1,33 @@
+/* -------------------------------------------------------------------------- */
+/* FORMATTING (layout / structure only)                                       */
+/* -------------------------------------------------------------------------- */
+
+@import "./formatting/widget-base.css";
+@import "./formatting/widget-tabs-header.css";
+@import "./formatting/course-list-view.css";
+@import "./formatting/schedule-view.css";
+@import "./formatting/schedule-view-events.css";
+@import "./formatting/settings-view.css";
+@import "./formatting/help-view.css";
+@import "./formatting/widget-footer.css";
+@import "./formatting/floating-button.css";
+
+/* -------------------------------------------------------------------------- */
+/* COLORS (theme / palette only)                                               */
+/* -------------------------------------------------------------------------- */
+
+@import "./colors/theme-tokens.css";
+@import "./colors/widget-base-colors.css";
+@import "./colors/widget-tabs-header-colors.css";
+@import "./colors/course-list-colors.css";
+@import "./colors/schedule-view-colors.css";
+@import "./colors/settings-view-colors.css";
+@import "./colors/help-view-colors.css";
+@import "./colors/widget-footer-colors.css";
+@import "./colors/floating-button-colors.css";
+
+/* -------------------------------------------------------------------------- */
+/* STATE COLORS (view-specific overrides)                                     */
+/* -------------------------------------------------------------------------- */
+
+@import "./colors/settings-colors.css";

@@ -1,0 +1,549 @@
+/* -------------------------------------------------------------------------- */
+/* SCHEDULE VIEW: TOP CONTROLS (SEMESTER TOGGLES)                              */
+/* -------------------------------------------------------------------------- */
+
+.schedule-controls {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+
+  gap: 10px;
+
+  padding: 8px 12px;
+}
+
+.schedule-semester-buttons {
+  display: flex;
+  left: 50%;
+  display: flex;
+  gap: 8px;
+}
+
+.semester-button {
+  padding: 2px 16px;
+  height: 30px;
+
+  border-radius: 999px;
+  border: none;
+
+  font-size: 16px;
+  font-weight: 700;
+
+  cursor: pointer;
+
+  transition: all 0.3s ease;
+}
+
+.semester-button .text {
+  display: inline-block;
+  opacity: 0.5;
+
+  transition: all 0.1s ease;
+}
+
+.semester-button:hover:not(.is-active) .text {
+  translate: 0 -0.5px;
+  opacity: 0.75;
+}
+
+.semester-button.is-active .text {
+  opacity: 1;
+}
+
+/* -------------------------------------------------------------------------- */
+/* SCHEDULE VIEW: SAVED SCHEDULES DROPDOWN                                     */
+/* -------------------------------------------------------------------------- */
+
+.schedule-saved-dropdown {
+  position: relative;
+  margin-left: auto;
+}
+
+.schedule-saved-summary {
+  display: inline-flex;
+  align-items: center;
+  padding: 0px 10px;
+  height: 28px;
+
+  border-radius: 999px;
+  border: none;
+
+  justify-content: center;
+  text-align: center;
+
+  font-size: 14px;
+  font-weight: 700;
+
+  cursor: pointer;
+  list-style: none;
+}
+
+.schedule-saved-summary::-webkit-details-marker {
+  display: none;
+}
+
+.schedule-saved-menu {
+  position: absolute;
+  right: 0;
+  top: calc(100% + 8px);
+  min-width: 240px;
+  max-width: 320px;
+
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+
+  padding: 7px;
+  border-radius: 12px;
+  border: 2px solid;
+  z-index: 100;
+}
+
+.schedule-saved-card {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+
+  padding: 10px;
+  border-radius: 10px;
+}
+
+.schedule-saved-summary .text {
+  text-align: center;
+}
+
+#widget-save-schedule {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  height: 34px;
+  width: 34px;
+}
+
+.schedule-saved-card-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.schedule-saved-title {
+  font-size: 14px;
+  font-weight: 700;
+}
+
+.schedule-saved-meta {
+  font-size: 12px;
+  opacity: 0.8;
+}
+
+.schedule-saved-actions {
+  display: flex;
+  gap: 8px;
+}
+
+.schedule-saved-action {
+  padding: 4px 8px;
+  border-radius: 999px;
+  border: none;
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.schedule-saved-empty {
+  font-size: 12px;
+  font-weight: 600;
+  padding: 8px;
+  border-radius: 10px;
+  text-align: center;
+  opacity: 0.7;
+}
+
+/* -------------------------------------------------------------------------- */
+/* SCHEDULE VIEW: SAVE MODAL                                                   */
+/* -------------------------------------------------------------------------- */
+
+.schedule-modal {
+  position: absolute;
+  inset: 0;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  backdrop-filter: blur(2px);
+
+  z-index: 200;
+}
+
+.schedule-modal.is-hidden {
+  display: none;
+}
+
+.schedule-modal.is-open {
+  display: flex;
+}
+
+.schedule-modal-backdrop {
+  position: absolute;
+  inset: 0;
+  padding: 10px;
+}
+
+.dialog-container {
+  position: relative;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  width: min(420px, 92%);
+  padding: 14px;
+
+  border-radius: 16px;
+
+  z-index: 1;
+}
+
+.schedule-modal-dialog {
+  position: relative;
+
+  border: 2px solid;
+
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+
+  width: min(420px, 92%);
+  padding: 16px;
+
+  border-radius: 16px;
+  z-index: 1;
+}
+
+.schedule-modal-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.schedule-modal-title {
+  margin: 0;
+  font-size: 18px;
+  font-weight: 700;
+}
+
+.schedule-modal-close {
+  border: none;
+  border-radius: 999px;
+
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+
+  width: 28px;
+  height: 28px;
+
+  cursor: pointer;
+}
+
+.schedule-modal-message {
+  margin: 0;
+  font-size: 13px;
+  line-height: 1.4;
+}
+
+.schedule-modal-field {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.schedule-modal-label {
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.schedule-modal-input {
+  padding: 8px 10px;
+  border-radius: 10px;
+  border: 1px solid transparent;
+  font-size: 13px;
+}
+
+.schedule-modal-input.is-invalid {
+  border-style: dashed;
+}
+
+.schedule-modal-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+}
+
+.schedule-modal-cancel {
+  opacity: 0.6;
+}
+
+.schedule-modal-field.is-hidden,
+.schedule-modal-cancel.is-hidden {
+  display: none;
+}
+
+/* -------------------------------------------------------------------------- */
+/* SCHEDULE VIEW: GRID + TABLE (TIME GRID STRUCTURE)                           */
+/* -------------------------------------------------------------------------- */
+
+.widget-panel[data-panel="schedule"] {
+  height: 100%;
+  flex-direction: column;
+  min-height: 0;
+}
+
+.widget-panel[data-panel="schedule"].is-active {
+  display: flex;
+}
+
+.schedule-grid {
+  flex: 1;
+  min-height: 0;
+
+  padding: 0 12px 12px;
+
+  display: block;
+  justify-content: center;
+
+  overflow: auto;
+  overscroll-behavior: contain;
+}
+
+.schedule-table {
+  width: max-content;
+
+  border-collapse: collapse;
+
+  font-size: 11px;
+
+  table-layout: fixed;
+
+  position: relative;
+}
+
+[data-panel="schedule"] .schedule-table thead th {
+  position: sticky;
+  top: 0;
+  z-index: 50;
+
+  height: 20px;
+  font-size: 14px;
+
+  padding: 5px 6px;
+
+  text-align: center;
+  vertical-align: middle;
+
+  border: none;
+}
+
+.schedule-table thead th:first-child {
+  border-left: 1px solid;
+}
+
+.schedule-table thead th:last-child {
+  border-right: 1px solid;
+}
+
+.schedule-table th {
+  font-weight: 700;
+}
+
+.schedule-table td {
+  border: 1px solid;
+
+  padding: 2px 6px;
+
+  text-align: center;
+  vertical-align: middle;
+
+  width: 130px;
+  box-sizing: border-box;
+
+  vertical-align: top;
+}
+
+.schedule-table th.schedule-time,
+.schedule-table td.schedule-time {
+  width: 40px;
+}
+
+.schedule-time {
+  font-weight: 600;
+}
+
+.schedule-table tbody tr {
+  height: 25px;
+}
+
+.schedule-table td.schedule-cell,
+.schedule-cell {
+  padding: 0;
+  vertical-align: top;
+}
+
+/* Center the schedule table block inside the scroll area */
+.widget-panel[data-panel="schedule"] .schedule-grid {
+  text-align: center;
+}
+
+/* -------------------------------------------------------------------------- */
+/* SCHEDULE VIEW: CONFLICT OVERLAYS + LAYERING                                 */
+/* -------------------------------------------------------------------------- */
+
+.schedule-table-wrap {
+  position: relative;
+  display: inline-block;
+
+  border: 3px solid;
+  border-top: none;
+
+  overflow: visible;
+}
+
+.schedule-cell-inner {
+  position: relative;
+
+  width: 100%;
+  height: 100%;
+
+  display: flex;
+}
+
+.schedule-overlay {
+  position: absolute;
+  inset: 0;
+
+  pointer-events: none;
+  z-index: 5;
+}
+
+.schedule-entry-overlap-rect {
+  background: transparent;
+  opacity: 0.5;
+  fill: none;
+}
+
+.schedule-conflict {
+  position: absolute;
+  left: 0;
+  right: 0;
+
+  pointer-events: none;
+  z-index: 3;
+
+  font-weight: 600;
+
+  overflow: hidden;
+}
+
+.schedule-conflict::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+
+  pointer-events: none;
+  z-index: 1;
+}
+
+/* -------------------------------------------------------------------------- */
+/* SCHEDULE VIEW: EVENT BLOCKS (IN-CELL)                                       */
+/* -------------------------------------------------------------------------- */
+
+.schedule-entry {
+  height: 100%;
+
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start;
+
+  text-align: center;
+
+  z-index: 4;
+
+  border: none;
+  border-radius: 0;
+
+  margin: 0;
+  padding: 6px 6px;
+
+  font-size: 11px;
+}
+
+.schedule-entry-title {
+  font-weight: 600;
+}
+
+.schedule-entry-time {
+  white-space: nowrap;
+}
+
+.schedule-entry-content {
+  position: relative;
+  z-index: 2;
+
+  justify-content: flex-start;
+
+  height: 100%;
+
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+
+  text-align: center;
+}
+
+/* -------------------------------------------------------------------------- */
+/* SCHEDULE VIEW: FLOATING MERGED BLOCKS + OVERLAP LAYER                       */
+/* -------------------------------------------------------------------------- */
+
+.schedule-entry-float {
+  position: absolute;
+  pointer-events: auto;
+  z-index: 6;
+
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  align-items: stretch;
+
+  padding-top: 1.1px;
+  box-sizing: border-box;
+
+  font-size: 9px;
+
+  overflow: hidden;
+}
+
+.schedule-entry-overlap-layer {
+  position: absolute;
+  inset: 0;
+
+  z-index: 1;
+  pointer-events: none;
+}
+
+.schedule-entry-overlap-rect {
+  position: absolute;
+  opacity: 0.85;
+}
+
+.schedule-entry-text {
+  position: relative;
+  z-index: 2;
+
+  display: block;
+  text-align: center;
+}

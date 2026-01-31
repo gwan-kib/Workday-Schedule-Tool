@@ -1,0 +1,215 @@
+/* -------------------------------------------------------------------------- */
+/* WIDGET HEADER + TABS + SEARCH + HEADER BUTTONS                              */
+/* -------------------------------------------------------------------------- */
+
+.widget-header {
+  display: flex;
+  align-items: center;
+
+  padding: 10px 12px;
+  gap: 6px;
+}
+
+#widget-title {
+  font-weight: 700;
+  font-size: 25px;
+}
+
+.spacer {
+  flex: 1;
+}
+
+/* generic header buttons */
+.btn {
+  padding: 6px 8px;
+
+  border-radius: 999px;
+
+  font-size: 14px;
+  font-weight: 600;
+
+  cursor: pointer;
+
+  opacity: 0.6;
+
+  transition: all 0.3s ease;
+}
+
+.widget-header .btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+
+  padding: 0 12px;
+  line-height: 1;
+}
+
+#widget-refresh {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  height: 34px;
+  width: 34px;
+}
+
+/* settings icon button */
+.btn.settings {
+  background: none;
+  padding: 0;
+
+  display: inline-flex;
+  height: 32px;
+  width: 32px;
+  justify-content: center;
+  align-items: center;
+}
+
+/* -------------------------------------------------------------------------- */
+/* EXPORT DROPDOWN                                                            */
+/* -------------------------------------------------------------------------- */
+
+.export-dropdown {
+  height: 32px;
+  position: relative;
+
+  display: inline-flex;
+  align-items: center;
+}
+
+.export-summary {
+  height: 34px;
+  width: 115px;
+
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 3px;
+
+  font-size: 13px;
+  list-style: none;
+}
+
+.export-menu {
+  position: absolute;
+  top: calc(100% + 8px);
+  right: 0;
+
+  display: none;
+  flex-direction: column;
+  gap: 6px;
+
+  min-width: 160px;
+  padding: 8px;
+
+  border-radius: 12px;
+  border: 2px solid;
+
+  z-index: 120;
+}
+
+.export-dropdown.is-open .export-menu {
+  display: flex;
+}
+
+.export-option {
+  padding: 8px 10px;
+
+  border-radius: 10px;
+  border: none;
+
+  font-size: 12px;
+  font-weight: 600;
+
+  cursor: pointer;
+  text-align: left;
+}
+
+/* help button */
+.help.btn {
+  height: 34px;
+  padding: 6px 12px;
+
+  font-size: 12px;
+  letter-spacing: 0.6px;
+
+  justify-content: center;
+  align-items: center;
+  display: flex;
+
+  gap: 3px;
+}
+
+/* -------------------------------------------------------------------------- */
+/* TABS + SEARCH                                                              */
+/* -------------------------------------------------------------------------- */
+
+.widget-tabs {
+  display: flex;
+  gap: 10px;
+  height: 30px;
+
+  align-items: center;
+  padding: 10px 12px;
+
+  border-bottom: 2px solid;
+  border-top: 1px solid;
+}
+
+.tab-button {
+  border: none;
+  height: 28px;
+
+  padding: 6px 12px;
+
+  border-radius: 999px;
+
+  font-size: 14px;
+  font-weight: 600;
+
+  cursor: pointer;
+
+  transition: all 0.3s ease;
+}
+
+.tab-button .text {
+  display: inline-block;
+  transition: all 0.3s ease;
+}
+
+.tab-button:hover:not(.is-active) .text {
+  opacity: 1;
+}
+
+.widget-search-wrap {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+}
+
+.widget-search-wrap .search-icon {
+  position: absolute;
+  left: 10px;
+
+  font-size: 18px;
+  pointer-events: none;
+
+  transition: all 0.2s ease;
+}
+
+#widget-search {
+  width: 230px;
+
+  padding: 6px 10px;
+  padding-left: 32px;
+
+  border: 1px solid;
+  border-radius: 999px;
+
+  font-size: 12px;
+  font-weight: 600;
+
+  transition:
+    box-shadow 150ms ease,
+    background-color 150ms ease;
+}

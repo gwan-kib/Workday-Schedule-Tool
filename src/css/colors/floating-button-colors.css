@@ -1,0 +1,9 @@
+.widget,
+#floating-button {
+  filter: hue-rotate(0deg);
+}
+
+#floating-button {
+  color: var(--hex-brand-accent-1);
+  background: var(--hex-brand-main-1);
+}

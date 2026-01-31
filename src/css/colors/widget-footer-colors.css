@@ -1,0 +1,5 @@
+.widget-footer {
+  border-top-color: var(--hex-neutral-4);
+  background: var(--hex-brand-accent-7);
+  color: var(--hex-brand-main-1);
+}
