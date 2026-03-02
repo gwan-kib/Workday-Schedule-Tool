@@ -9,7 +9,7 @@ const logConfiguration = {
 // debugLog({ local: { schedule: true } })        -> turns logs ON for the "schedule" module (local control)
 // debugLog({ log: { "schedule.render": false }}) -> disables logging for the "schedule.render" function (specific log control)
 export const debugLog = ({ global, local, log } = {}) => {
-  if (typeof global === "boolean") logConfiguration.global = global;
+  if (global && typeof global === "boolean") logConfiguration.global = global;
 
   if (local && typeof local === "object") {
     for (const [k, v] of Object.entries(local)) {

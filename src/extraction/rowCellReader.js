@@ -3,7 +3,7 @@ import { debugFor } from "../utilities/debugTool.js";
 
 const debug = debugFor("rowCellReader");
 
-// maps row cells to Workday keys (e.g., "252.9" from "<div id='gen-dwr-comp-252.9-...'>")
+// Extracts the Workday column key from a cell. Input: cell element. Output: key string or null.
 function getCellWorkdayKey(cell) {
   const inner = cell.querySelector('[id^="gen-dwr-comp-"]');
   const id = inner?.id || "";
@@ -11,14 +11,13 @@ function getCellWorkdayKey(cell) {
   return m ? m[1] : null;
 }
 
+// Creates helpers to read row cells by header key. Input: row element and header maps. Output: reader object.
 export function createRowCellReader(rowEl, headerMaps) {
   const { colMap: colHeaderMap } = headerMaps || {};
 
   const cellsInRow = $$(rowEl, "td, [role='gridcell']");
 
-  debug.log({ id: "createRowCellReader.start" }, "Creating row cell reader:", {
-    cellCount: cellsInRow.length,
-  });
+  debug.log({ id: "createRowCellReader.start" }, "Creating row cell reader:", cellsInRow);
 
   const cellByCol = new Map();
   cellsInRow.forEach((cell) => {

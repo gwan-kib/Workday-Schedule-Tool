@@ -5,83 +5,108 @@
   />
 </head>
 
-<button id="floating-button" type="button">
+<!-- ========================= -->
+<!-- Floating launcher button -->
+<!-- ========================= -->
+<button id="floating-button" type="button" title="Open schedule tool">
   <span class="floating-button__icon" aria-hidden="true">▶</span>
   <span class="material-symbols-rounded">calendar_month</span>
 </button>
 
 <div class="widget is-hidden">
+  <!-- ========================= -->
+  <!-- Header: title + actions -->
+  <!-- ========================= -->
   <div class="widget-header">
     <span id="widget-title">Workday - Schedule Tool</span>
 
     <span class="spacer"></span>
     <div class="export-dropdown" id="widget-export">
       <button
-        class="btn export-summary"
+        class="button export-summary"
         id="widget-export-button"
         type="button"
         aria-haspopup="menu"
         aria-expanded="false"
+        title="Export schedule"
       >
         <span class="material-symbols-rounded export-icon" aria-hidden="true"> ios_share </span>
         <span class="text">Export</span>
         <span class="material-symbols-rounded" aria-hidden="true">expand_more</span>
       </button>
       <div class="export-menu" id="widget-export-menu" role="menu">
-        <button class="export-option" type="button" data-export="ics">Download .ics</button>
-        <button class="export-option" type="button" data-export="png">More options soon...</button>
+        <button class="export-option" type="button" data-export="ics" title="Download calendar file (.ics)">
+          Download .ics
+        </button>
+        <button class="export-option" type="button" data-export="png" title="More export options coming soon">
+          More options soon...
+        </button>
       </div>
     </div>
-    <button class="btn help" type="button" aria-label="Help">
+    <button class="button help" type="button" aria-label="Help" title="Open help">
       <span class="material-symbols-rounded"> help </span><span class="text">Help</span>
     </button>
-    <button class="btn settings" type="button" aria-label="Settings">
+    <button class="button settings symbolOnly" type="button" aria-label="Settings" title="Open settings">
       <span class="material-symbols-rounded">settings</span>
     </button>
   </div>
-  <div class="widget-tabs">
-    <button class="tab-button is-active" type="button" data-panel="list">
-      <span class="text">Course List</span>
+  <!-- ========================= -->
+  <!-- Toolbar -->
+  <!-- ========================= -->
+  <div class="widet-toolbar">
+    <button class="tab-button symbolOnly is-active" type="button" data-panel="list" title="List view">
+      <span class="text"><span class="material-symbols-rounded">format_list_bulleted</span></span>
     </button>
-    <button class="tab-button" type="button" data-panel="schedule">
-      <span class="text">Schedule View</span>
+    <button class="tab-button symbolOnly" type="button" data-panel="schedule" title="Schedule view">
+      <span class="text"><span class="material-symbols-rounded">calendar_today</span></span>
     </button>
     <div class="widget-search-wrap">
       <span class="material-symbols-rounded search-icon" aria-hidden="true"> search </span>
-      <input id="widget-search" placeholder="Course Name / Instructor / Week Day…" />
+      <input id="widget-search" placeholder="Course Name/Week Day/Instructor…" />
     </div>
     <span class="spacer"></span>
-    <button id="widget-refresh" class="btn" type="button">
-      <span class="material-symbols-rounded"> refresh </span>
-    </button>
-    <button id="widget-save-schedule" class="btn schedule-save-button" type="button">
-      <span class="material-symbols-rounded save-icon"> save_as </span>
-    </button>
     <details class="schedule-saved-dropdown" id="schedule-saved-dropdown">
-      <summary class="schedule-saved-summary">
+      <summary class="schedule-saved-summary" title="Choose a saved schedule">
         <span class="text">Schedules</span>
         <span class="material-symbols-rounded" aria-hidden="true">expand_more</span>
       </summary>
       <div class="schedule-saved-menu" id="schedule-saved-menu"></div>
     </details>
+    <button id="widget-save-schedule" class="button schedule-save-button symbolOnly" type="button" title="Save schedule">
+      <span class="material-symbols-rounded save-icon"> save_as </span>
+    </button>
+    <button id="widget-refresh" class="button symbolOnly" type="button" title="Refresh data">
+      <span class="material-symbols-rounded"> refresh </span>
+    </button>
+    <button id="widget-clear" class="button symbolOnly" type="button" title="Clear all entries">
+      <span class="material-symbols-rounded"> delete_forever </span>
+    </button>
   </div>
+  <!-- ========================= -->
+  <!-- Main content panels -->
+  <!-- ========================= -->
   <div class="widget-body">
+    <!-- ========================= -->
+    <!-- List panel -->
+    <!-- ========================= -->
     <div class="widget-panel is-active" data-panel="list">
-      <table>
-        <thead>
-          <tr>
-            <th data-key="title">Title</th>
-            <th data-key="code">Class Code</th>
-            <th data-key="section">Section</th>
-            <th data-key="instructor">Instructor</th>
-            <th data-key="meeting">Meeting Times</th>
-            <th data-key="instructionalFormat">Class Type</th>
-          </tr>
-        </thead>
+      <div class="course-list-toolbar">
+        <span class="course-list-label">Sort By:</span>
+        <div class="course-sortbar" id="course-sortbar">
+          <button class="course-sort-button" type="button" data-key="code">Course Code</button>
+          <button class="course-sort-button" type="button" data-key="title">Title</button>
+          <button class="course-sort-button" type="button" data-key="section_number">Section Number</button>
+          <button class="course-sort-button" type="button" data-key="instructor">Instructor</button>
+          <button class="course-sort-button" type="button" data-key="meeting">Meeting Days</button>
+          <button class="course-sort-button" type="button" data-key="instructionalFormat">Class Type</button>
+        </div>
+      </div>
 
-        <tbody id="widget-tbody"></tbody>
-      </table>
+      <div class="course-list" id="course-list"></div>
     </div>
+    <!-- ========================= -->
+    <!-- Schedule panel -->
+    <!-- ========================= -->
     <div class="widget-panel" data-panel="schedule">
       <div class="schedule-controls">
         <div class="schedule-semester-buttons">
@@ -95,6 +120,9 @@
       </div>
       <div class="schedule-grid" id="schedule-grid"></div>
     </div>
+    <!-- ========================= -->
+    <!-- Settings panel -->
+    <!-- ========================= -->
     <div class="widget-panel" data-panel="settings">
       <div class="settings-panel">
         <h2>Settings</h2>
@@ -103,7 +131,7 @@
           <label class="settings-field">
             <a
               class="link"
-              href="https://github.com/gwan-kib/Workday-Extension/tree/release"
+              href="https://github.com/gwan-kib/Workday-Schedule-Tool"
               target="_blank"
               rel="noopener noreferrer"
               >GitHub Repo<span class="material-symbols-rounded">arrow_outward</span></a
@@ -121,6 +149,9 @@
         </div>
       </div>
     </div>
+    <!-- ========================= -->
+    <!-- Help panel -->
+    <!-- ========================= -->
     <div class="widget-panel" data-panel="help">
       <div class="help-panel">
         <h2>Help</h2>
@@ -137,9 +168,12 @@
             >
           </label>
         </div>
-        <p>Extension not working properly? Found a bug? Feel free to send me an email: gwantanak.3@gmail.com</p>
+        <p>Extension not working properly? Found a bug?<br>Feel free to send me an email: gwantanak.3@gmail.com</p>
       </div>
     </div>
+    <!-- ========================= -->
+    <!-- Save schedule modal -->
+    <!-- ========================= -->
     <div class="schedule-modal is-hidden" id="schedule-save-modal" aria-hidden="true">
       <div class="schedule-modal-backdrop" data-action="close"></div>
       <div class="dialog-container">
@@ -161,16 +195,19 @@
             />
           </label>
           <div class="schedule-modal-actions">
-            <button class="btn schedule-modal-cancel" type="button" data-action="cancel">Cancel</button>
-            <button class="btn schedule-modal-confirm" type="button" data-action="confirm">Save</button>
+            <button class="button schedule-modal-cancel" type="button" data-action="cancel">Cancel</button>
+            <button class="button schedule-modal-confirm" type="button" data-action="confirm">Save</button>
           </div>
         </div>
       </div>
     </div>
   </div>
+  <!-- ========================= -->
+  <!-- Footer -->
+  <!-- ========================= -->
   <div class="widget-footer">
-    <span id="widget-conflicts" class="widget-conflicts"></span>
+    <span class="footer-alert is-hidden" id="schedule-conflict-alert" aria-live="polite"></span>
     <span class="spacer"></span>
-    <span class="footer-tip"><span class="muted">Tip: Click headers to sort</span></span>
+    <span class="footer-tip"><span class="muted">Click sort buttons to reorder courses</span></span>
   </div>
 </div>

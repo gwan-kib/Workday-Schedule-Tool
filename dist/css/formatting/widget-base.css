@@ -31,7 +31,7 @@
 
   transition: all 0.3s ease-in-out;
 
-  width: min(780px, 92vw);
+  width: 700px;
   height: 85vh;
 }
 
@@ -53,12 +53,19 @@ h3,
 
 /* icons */
 .material-symbols-rounded {
+  display: inline-flex !important;
+  align-items: center;
+  justify-content: center;
+  line-height: 1;
+  vertical-align: middle;
+  user-select: none;
   font-variation-settings:
     "FILL" 0,
     "wght" 400,
     "GRAD" 0,
     "opsz" 24;
 }
+
 
 .widget.is-settings-view .settings .material-symbols-rounded {
   font-variation-settings:
@@ -114,3 +121,33 @@ input:focus-visible {
 .widget-panel.is-active {
   display: block;
 }
+
+/* -------------------------------------------------------------------------- */
+/* MINIMAL SCROLLBARS (COURSE + SCHEDULE VIEWS)                               */
+/* -------------------------------------------------------------------------- */
+
+.widget-body::-webkit-scrollbar,
+.schedule-grid::-webkit-scrollbar {
+  width: 10px;
+  background: transparent;
+}
+
+.widget-body::-webkit-scrollbar-track,
+.schedule-grid::-webkit-scrollbar-track {
+  border-radius: 999px;
+  background-color: var(--scrollbar-track);
+}
+
+.widget-body::-webkit-scrollbar-thumb,
+.schedule-grid::-webkit-scrollbar-thumb {
+  border-radius: 999px;
+  background-color: var(--scrollbar-thumb);
+}
+
+.widget-body::-webkit-scrollbar-button,
+.schedule-grid::-webkit-scrollbar-button {
+  width: 0;
+  height: 0;
+  display: none;
+}
+

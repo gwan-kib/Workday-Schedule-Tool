@@ -20,15 +20,16 @@
   border-bottom-right-radius: inherit;
 }
 
-.widget-conflicts {
-  margin-right: auto;
+.footer-alert {
   font-size: 12px;
+  font-weight: 700;
 }
 
-.widget-conflicts.is-hover {
-  font-weight: 800;
+.footer-alert.is-hidden {
+  display: none;
 }
 
 .footer-tip {
   margin-left: auto;
 }
+

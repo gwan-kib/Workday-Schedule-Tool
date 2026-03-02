@@ -4,33 +4,67 @@
 
 :root,
 :host {
-  --hex-brand-main-1: #401d81;
-  --hex-brand-main-2: #6b4fd6;
-  --hex-brand-main-3: #6e50c7;
-  --hex-brand-main-4: #8f6bce;
-  --hex-brand-main-5: #906acc;
-  --hex-brand-main-6: #916ccc;
-  --hex-brand-main-7: #9583d0;
-  --hex-brand-main-8: #ae7aff;
-  --hex-brand-accent-1: #e4d6ff;
-  --hex-brand-accent-2: #e5d6fd;
-  --hex-brand-accent-3: #e6d3f5;
-  --hex-brand-accent-4: #ede2ff;
-  --hex-brand-accent-5: #f7f2ff;
-  --hex-brand-accent-6: #fbf8ff;
-  --hex-brand-accent-7: #fbf9ff;
-  --hex-brand-accent-8: #fdf7ff;
-  --hex-brand-accent-9: #cdadff;
-  --hex-brand-accent-10: #cdaefc;
-  --hex-brand-accent-11: #cfd6e4;
-  --hex-brand-accent-12: #e0e7ff;
+  --hex-brand-main-1: #3b45a4;
+  --hex-brand-main-2: #4a59c0;
+  --hex-brand-main-3: #6471cf;
+  --hex-brand-accent-1: #f6f7fe;
+  --hex-brand-accent-2: #eef1fd;
+  --hex-brand-accent-3: #e1e5fb;
+  --hex-brand-accent-4: #b6bdf0;
+  --hex-brand-accent-5: #8f98e0;
+  --hex-brand-accent-6: #737ed6;
   --hex-neutral-1: #ffffff;
-  --hex-neutral-2: #f9fafb;
-  --hex-neutral-3: #f3f4f6;
-  --hex-neutral-4: #e5e7eb;
-  --hex-neutral-5: #d1d5db;
-  --hex-neutral-6: #6b7280;
+  --hex-neutral-2: #e5e7eb;
+  --hex-neutral-3: #000000;
   --hex-danger-1: #b91c1c;
-  --hex-danger-2: #ff6666;
-  --hex-shadow-1: #000000;
+
+  /* Shared course palette (used by course list + schedule view) */
+  --course-color-1-bg: #ffc2b5;
+  --course-color-1-border: #e1745c;
+  --course-color-1-chip: #ffe3dd;
+
+  --course-color-1-sub-bg: var(--course-color-1-chip);
+  --course-color-1-sub-chip: var(--course-color-1-bg);
+
+  --course-color-2-bg: #ffd2a0;
+  --course-color-2-border: #db9140;
+  --course-color-2-chip: #ffe5c8;
+
+  --course-color-2-sub-bg: var(--course-color-2-chip);
+  --course-color-2-sub-chip: var(--course-color-2-bg);
+
+  --course-color-3-bg: #dfc4ff;
+  --course-color-3-border: #8839e3;
+  --course-color-3-chip: #ede0ff;
+
+  --course-color-3-sub-bg: var(--course-color-3-chip);
+  --course-color-3-sub-chip: var(--course-color-3-bg);
+
+  --course-color-4-bg: #b9d6ff;
+  --course-color-4-border: #4887e1;
+  --course-color-4-chip: #ddebff;
+
+  --course-color-4-sub-bg: var(--course-color-4-chip);
+  --course-color-4-sub-chip: var(--course-color-4-bg);
+
+  --course-color-5-bg: #fff5ae;
+  --course-color-5-border: #ecd125;
+  --course-color-5-chip: #fffbdf;
+
+  --course-color-5-sub-bg: var(--course-color-5-chip);
+  --course-color-5-sub-chip: var(--course-color-5-bg);
+
+  --course-color-6-bg: #c9efa7;
+  --course-color-6-border: #69d00a;
+  --course-color-6-chip: #e3ffca;
+
+  --course-color-6-sub-bg: var(--course-color-6-chip);
+  --course-color-6-sub-chip: var(--course-color-6-bg);
+
+  --course-color-7-bg: #c6ffe8;
+  --course-color-7-border: #1bdfd3;
+  --course-color-7-chip: #e7fff5;
+
+  --course-color-7-sub-bg: var(--course-color-7-chip);
+  --course-color-7-sub-chip: var(--course-color-7-bg);
 }

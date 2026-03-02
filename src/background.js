@@ -2,6 +2,7 @@ import { debugFor } from "./utilities/debugTool.js";
 
 const debug = debugFor("background"); 
 
+// Handles action button clicks by sending a toggle message to the active tab. Input: Chrome tab object. Output: none.
 chrome.action.onClicked.addListener((tab) => {
   if (!tab?.id) return;
 

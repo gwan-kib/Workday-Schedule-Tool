@@ -1,0 +1,16 @@
+# Dependencies
+node_modules/
+
+# Build configs
+vite.config.js
+vite.*.js
+package.json
+package-lock.json
+
+# OS junk
+.DS_Store
+Thumbs.db
+
+# Editor
+.vscode/
+.idea/

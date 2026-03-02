@@ -2,6 +2,7 @@ import { debugFor } from "../../utilities/debugTool";
 
 const debug = debugFor("sectionLinkInfo");
 
+// Parses a section link string into structured fields. Input: string. Output: object or null.
 export function parseSectionLinkString(input) {
   let str = String(input || "")
     .replace(/\u00A0/g, " ")
@@ -11,7 +12,6 @@ export function parseSectionLinkString(input) {
 
   if (!str) return null;
 
-  // keep ALL lines; Workday wraps titles with \n
   str = str.replace(/\s*\n\s*/g, " ").trim();
 
   debug.log({ id: "parseSectionLinkString.normalized" }, "Normalized string:", str);
@@ -22,8 +22,8 @@ export function parseSectionLinkString(input) {
     return null;
   }
 
-  const baseCode = m[1].trim(); // "COSC_O 222"
-  const rest = m[2].trim(); // "L2D - Data Structures" or "101 - Data Structures"
+  const baseCode = m[1].trim();
+  const rest = m[2].trim();
 
   debug.log({ id: "parseSectionLinkString.match" }, "Regex match:", { baseCode, rest });
 

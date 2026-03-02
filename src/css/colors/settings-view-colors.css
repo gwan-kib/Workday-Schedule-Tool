@@ -3,10 +3,10 @@
 }
 
 .widget-panel[data-panel="settings"] .settings-field .link {
-  background: var(--hex-brand-accent-5);
+  background: var(--hex-brand-accent-3);
   color: var(--hex-brand-main-1);
 
-  border-color: var(--hex-brand-accent-11);
+  border-color: var(--hex-brand-accent-6);
 }
 
 .widget-panel[data-panel="settings"] .settings-field .link .material-symbols-rounded {
@@ -15,9 +15,10 @@
 
 .widget-panel[data-panel="settings"] .settings-field .link:hover {
   background: var(--hex-neutral-1);
-  border-color: var(--hex-brand-accent-9);
+  border-color: var(--hex-brand-accent-6);
 }
 
 .widget-panel[data-panel="settings"] .settings-field .link:focus-visible {
-  outline-color: var(--hex-brand-accent-9);
+  outline-color: var(--hex-brand-accent-6);
 }
+

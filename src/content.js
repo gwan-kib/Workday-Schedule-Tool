@@ -5,11 +5,17 @@ import { ensureMount } from "./utilities/shadowMount.js";
 import { loadMainPanel } from "./mainPanel/loadMainPanel.js";
 import { extractCoursesData } from "./extraction/index.js";
 
-import { filterCourses, sortCourses, wireTableSorting } from "./mainPanel/mainPanelInteractions.js";
+import { filterCourses, sortCourses, wireTableSorting } from "./mainPanel/courseViewSorting.js";
 import { renderCourseRows } from "./mainPanel/renderCourseRows.js";
 import { renderSchedule } from "./mainPanel/scheduleView.js";
 
 import { exportICS } from "./exportLogic/exportIcs.js";
+
+import {
+  fetchSectionGradesWithFallback,
+  parseCourseInfoFromPromptText,
+  readTermCampus,
+} from "./averageGrades/gradesApiCall.js";
 
 import {
   canSaveMoreSchedules,
@@ -20,6 +26,70 @@ import {
   renderSavedSchedules,
 } from "./mainPanel/scheduleStorage.js";
 
+const MAX_COURSE_COLORS = 7;
+
+// Assigns stable color indices to courses if missing. Input: courses array. Output: none.
+const assignCourseColors = (courses) => {
+  if (!Array.isArray(courses)) return;
+
+  const getCourseKey = (course) => {
+    if (!course) return "";
+    const code = String(course.code || "").trim().toUpperCase();
+    const title = String(course.title || "").trim().toUpperCase();
+    if (code || title) return `${code}||${title}`;
+    return String(course.section_number || "").trim().toUpperCase();
+  };
+
+  const isLecture = (course) => !(course?.isLab || course?.isSeminar || course?.isDiscussion);
+  const hasValidColor = (course) =>
+    Number.isInteger(course?.colorIndex) && course.colorIndex >= 1 && course.colorIndex <= MAX_COURSE_COLORS;
+
+  let colorCursor = 0;
+  const colorByKey = new Map();
+
+  const nextColor = () => {
+    colorCursor += 1;
+    return ((colorCursor - 1) % MAX_COURSE_COLORS) + 1;
+  };
+
+  // First pass: assign base colors to lecture sections only (per course key).
+  courses.forEach((course) => {
+    if (!course) return;
+    const key = getCourseKey(course);
+    if (hasValidColor(course)) {
+      if (key && !colorByKey.has(key)) colorByKey.set(key, course.colorIndex);
+      return;
+    }
+    if (!isLecture(course)) return;
+    if (key && colorByKey.has(key)) {
+      course.colorIndex = colorByKey.get(key);
+      return;
+    }
+    const colorIndex = nextColor();
+    course.colorIndex = colorIndex;
+    if (key) colorByKey.set(key, colorIndex);
+  });
+
+  // Second pass: apply lecture color to labs/seminars/discussions (or any remaining).
+  courses.forEach((course) => {
+    if (!course) return;
+    if (hasValidColor(course)) {
+      const key = getCourseKey(course);
+      if (key && !colorByKey.has(key)) colorByKey.set(key, course.colorIndex);
+      return;
+    }
+    const key = getCourseKey(course);
+    if (key && colorByKey.has(key)) {
+      course.colorIndex = colorByKey.get(key);
+      return;
+    }
+    const colorIndex = nextColor();
+    course.colorIndex = colorIndex;
+    if (key) colorByKey.set(key, colorIndex);
+  });
+};
+
+// Bootstraps the content script UI and event wiring. Input: none. Output: none.
 (() => {
   console.log("[WD] content script loaded");
 
@@ -27,9 +97,6 @@ import {
     const shadowRoot = ensureMount();
     const ui = await loadMainPanel(shadowRoot);
 
-    // ---------------------------
-    // Helpers
-    // ---------------------------
     const updateScheduleView = () => {
       renderSchedule(ui, STATE.filtered, STATE.view.semester);
     };
@@ -40,11 +107,16 @@ import {
       updateScheduleView();
     };
 
+    const isMainPanel = (viewKey) => viewKey === STATE.view.panel;
+
     const setActiveView = (viewKey) => {
+      if (isMainPanel(viewKey)) {
+        STATE.view.lastMainPanel = viewKey;
+      }
       STATE.view.panel = viewKey;
 
       ui.views.forEach((el) => el.classList.toggle("is-active", el.dataset.panel === viewKey));
-      ui.viewTabs.forEach((btn) => btn.classList.toggle("is-active", btn.dataset.panel === viewKey));
+      ui.viewTabs.forEach((button) => button.classList.toggle("is-active", button.dataset.panel === viewKey));
 
       ui.mainPanel.classList.toggle("is-schedule-view", viewKey === "schedule");
       ui.mainPanel.classList.toggle("is-settings-view", viewKey === "settings");
@@ -62,9 +134,6 @@ import {
 
     syncFloatingButtonState();
 
-    // ---------------------------
-    // Modal (Save Schedule)
-    // ---------------------------
     let resolveScheduleModal = null;
 
     const closeScheduleModal = (value) => {
@@ -137,19 +206,16 @@ import {
       });
     }
 
-    // ---------------------------
-    // Views + semester toggles
-    // ---------------------------
-    ui.viewTabs.forEach((btn) => {
-      on(btn, "click", () => {
-        setActiveView(btn.dataset.panel);
-        if (btn.dataset.panel === "schedule") updateScheduleView();
+    ui.viewTabs.forEach((button) => {
+      on(button, "click", () => {
+        setActiveView(button.dataset.panel);
+        if (button.dataset.panel === "schedule") updateScheduleView();
       });
     });
 
-    ui.semesterButtons.forEach((btn) => {
-      on(btn, "click", () => {
-        STATE.view.semester = btn.dataset.semester;
+    ui.semesterButtons.forEach((button) => {
+      on(button, "click", () => {
+        STATE.view.semester = button.dataset.semester;
 
         ui.semesterButtons.forEach((b) => b.classList.toggle("is-active", b.dataset.semester === STATE.view.semester));
         updateScheduleView();
@@ -158,9 +224,6 @@ import {
 
     on(ui.floatingButton, "click", toggleMainPanel);
 
-    // ---------------------------
-    // Dropdowns (export + saved)
-    // ---------------------------
     const setExportOpen = (isOpen) => {
       if (!ui.exportDropdown || !ui.exportButton) return;
       ui.exportDropdown.classList.toggle("is-open", isOpen);
@@ -172,45 +235,42 @@ import {
       setExportOpen(!isOpen);
     });
 
-    // Single click-outside handler (closes both export + saved dropdowns)
     on(document, "click", (event) => {
       const path = event.composedPath ? event.composedPath() : [];
 
-      // Export dropdown: class-based
       if (ui.exportDropdown?.classList.contains("is-open") && !path.includes(ui.exportDropdown)) {
         setExportOpen(false);
       }
 
-      // Saved dropdown: <details open>
       if (ui.savedDropdown?.open && !path.includes(ui.savedDropdown)) {
         ui.savedDropdown.open = false;
       }
     });
 
-    // ---------------------------
-    // Messages
-    // ---------------------------
     chrome.runtime.onMessage.addListener((message) => {
       if (message?.type === "TOGGLE_WIDGET") toggleMainPanel();
     });
 
-    // ---------------------------
-    // Refresh (re-extract)
-    // ---------------------------
     on(ui.refreshButton, "click", async () => {
-      ui.refreshButton.classList.remove("rotate"); // reset if clicked fast
-      void ui.refreshButton.offsetWidth; // force reflow
+      ui.refreshButton.classList.remove("rotate");
+      void ui.refreshButton.offsetWidth;
       ui.refreshButton.classList.add("rotate");
 
       STATE.courses = await extractCoursesData();
-      STATE.currentScheduleName = null; // reset schedule name on refresh
+      assignCourseColors(STATE.courses);
+      STATE.currentScheduleName = null;
       filterCourses(ui.searchInput.value);
       renderAll();
     });
 
-    // ---------------------------
-    // Export actions
-    // ---------------------------
+    on(ui.clearButton, "click", () => {
+      STATE.courses = [];
+      STATE.filtered = [];
+      STATE.currentScheduleName = null;
+      ui.searchInput.value = "";
+      renderAll();
+    });
+
     const handleExport = async (type) => {
       if (type === "ics") exportICS(STATE.currentScheduleName);
     };
@@ -223,9 +283,6 @@ import {
       await handleExport(action.dataset.export);
     });
 
-    // ---------------------------
-    // Save schedules
-    // ---------------------------
     on(ui.saveScheduleButton, "click", async () => {
       if (!canSaveMoreSchedules(STATE.savedSchedules)) {
         await openScheduleModal({
@@ -284,9 +341,9 @@ import {
         return;
       }
 
-      // Load
       STATE.currentScheduleName = selected.name;
       STATE.courses = [...selected.courses];
+      assignCourseColors(STATE.courses);
       STATE.filtered = [...selected.courses];
       ui.searchInput.value = "";
 
@@ -295,24 +352,30 @@ import {
       if (ui.savedDropdown) ui.savedDropdown.open = false;
     });
 
-    // ---------------------------
-    // Settings/help shortcuts
-    // ---------------------------
     on(ui.settingsButton, "click", () => {
       ui.mainPanel.classList.remove("is-hidden");
       ui.floatingButton.classList.remove("is-collapsed");
+      if (STATE.view.panel === "settings") {
+        const backTo = STATE.view.lastMainPanel || "list";
+        setActiveView(backTo);
+        if (backTo === "schedule") updateScheduleView();
+        return;
+      }
       setActiveView("settings");
     });
 
     on(ui.helpButton, "click", () => {
       ui.mainPanel.classList.remove("is-hidden");
       ui.floatingButton.classList.remove("is-collapsed");
+      if (STATE.view.panel === "help") {
+        const backTo = STATE.view.lastMainPanel || "list";
+        setActiveView(backTo);
+        if (backTo === "schedule") updateScheduleView();
+        return;
+      }
       setActiveView("help");
     });
 
-    // ---------------------------
-    // Search filter
-    // ---------------------------
     on(
       ui.searchInput,
       "input",
@@ -324,13 +387,11 @@ import {
 
     wireTableSorting(ui);
 
-    // ---------------------------
-    // Initial load
-    // ---------------------------
     STATE.savedSchedules = await loadSavedSchedules();
     renderSavedSchedules(ui, STATE.savedSchedules);
 
     STATE.courses = await extractCoursesData();
+    assignCourseColors(STATE.courses);
     STATE.filtered = [...STATE.courses];
 
     STATE.sort = STATE.sort || { key: "code", dir: 1 };
@@ -340,6 +401,139 @@ import {
     updateScheduleView();
 
     setActiveView(STATE.view.panel);
+
+    let termCampus = readTermCampus();
+
+    const extractAverage = (data) => {
+      if (!data) return null;
+      if (Array.isArray(data)) {
+        for (const item of data) {
+          const avg = extractAverage(item);
+          if (avg != null) return avg;
+        }
+        return null;
+      }
+      if (typeof data !== "object") return null;
+      const direct =
+        data.average ?? data.avg ?? data.average_grade ?? data.averagePercent ?? data.avgPercent ?? data.mean ?? null;
+      if (typeof direct === "number") return direct;
+      if (typeof direct === "string" && direct.trim()) return direct.trim();
+
+      const nested = data?.grades?.average ?? data?.grades?.avg ?? data?.summary?.average ?? data?.summary?.avg ?? null;
+      if (typeof nested === "number") return nested;
+      if (typeof nested === "string" && nested.trim()) return nested.trim();
+
+      return null;
+    };
+
+    const buildAverageLabel = (average) => {
+      if (average == null) return "Average:\nN/A";
+      if (typeof average === "number") return `Average:\n${average.toFixed(1)}%`;
+      return `Average:\n${average}%`;
+    };
+
+    const hasValidAverage = (data) => extractAverage(data) != null;
+
+    const createAverageButton = (courseInfo) => {
+      const button = document.createElement("button");
+      button.type = "button";
+      button.className = "wd-average-grade-button";
+      button.textContent = "Class Average\n(past 5 years)";
+
+      button.addEventListener("click", async (event) => {
+        event.preventDefault();
+        event.stopPropagation();
+
+        if (button.dataset.loading === "true") return;
+        button.dataset.loading = "true";
+        button.textContent = "loading...";
+        button.disabled = true;
+
+        termCampus = readTermCampus() || termCampus;
+        if (!termCampus) {
+          button.textContent = "Average:\nunavailable";
+          button.disabled = false;
+          button.dataset.loading = "false";
+          return;
+        }
+
+        try {
+          const data = await fetchSectionGradesWithFallback(
+            {
+              campus: termCampus.campus,
+              yearsession: termCampus.yearsession,
+              subject: courseInfo.subject,
+              course: courseInfo.course,
+              section: courseInfo.section,
+            },
+            { isValid: hasValidAverage },
+          );
+
+          if (!data) {
+            button.textContent = "Average:\nunavailable";
+          } else {
+            const avg = extractAverage(data);
+            button.textContent = buildAverageLabel(avg);
+          }
+        } catch (error) {
+          button.textContent = "Average:\nunavailable";
+        } finally {
+          button.disabled = false;
+          button.dataset.loading = "false";
+        }
+      });
+
+      return button;
+    };
+
+    const ensureAverageButton = (headerWrapper) => {
+      if (!headerWrapper || !(headerWrapper instanceof Element)) return;
+      if (headerWrapper.previousElementSibling?.classList?.contains("wd-average-grade-button")) return;
+
+      const parentElement = headerWrapper.parentElement;
+      if (parentElement) {
+        parentElement.style.display = "flex";
+        parentElement.style.alignItems = "center";
+      }
+
+      const promptOption = headerWrapper.querySelector?.('[data-automation-id="promptOption"]') || headerWrapper;
+      const str =
+        promptOption.getAttribute?.("data-automation-label") ||
+        promptOption.getAttribute?.("title") ||
+        promptOption.getAttribute?.("aria-label") ||
+        promptOption.textContent ||
+        "";
+
+      const courseInfo = parseCourseInfoFromPromptText(str);
+      if (!courseInfo) return;
+
+      const button = createAverageButton(courseInfo);
+      headerWrapper.parentNode?.insertBefore(button, headerWrapper);
+    };
+
+    const averageButtonSelector = "div.WHPF.WFPF, div.WHMF.WFMF";
+
+    const handleAverageButtonNodes = (node) => {
+      if (!(node instanceof Element)) return;
+      if (node.matches?.(averageButtonSelector)) {
+        ensureAverageButton(node);
+      }
+      const matches = node.querySelectorAll?.(averageButtonSelector) || [];
+      matches.forEach((el) => ensureAverageButton(el));
+    };
+
+    const avgButtonObserver = new MutationObserver((mutations) => {
+      mutations.forEach((mutation) => {
+        if (mutation.type !== "childList" || mutation.addedNodes.length === 0) return;
+        mutation.addedNodes.forEach((node) => handleAverageButtonNodes(node));
+      });
+    });
+
+    avgButtonObserver.observe(document.body, { childList: true, subtree: true });
+
+    window.addEventListener("beforeunload", () => {
+      avgButtonObserver.disconnect();
+    });
   }
 
   if (document.readyState === "loading") {

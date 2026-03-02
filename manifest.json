@@ -2,7 +2,7 @@
   "manifest_version": 3,
   "name": "Workday - Schedule Tool",
   "version": "1.0",
-  "description": "Extract your registered courses from the Workday View My Courses page.",
+  "description": "A tool to make planning for your semester easier.",
 
   "permissions": ["storage"],
 
@@ -18,6 +18,9 @@
   "action": {
     "default_title": "Workday - Schedule Tool",
     "default_icon": {
+      "16": "icon16.png",
+      "32": "icon32.png",
+      "48": "icon48.png",
       "128": "icon128.png"
     }
   },
@@ -30,6 +33,13 @@
     {
       "matches": ["https://*.myworkday.com/*"],
       "js": ["dist/content.js"],
+      "css": [
+        "dist/css/colors/theme-tokens.css",
+        "dist/css/formatting/average-grade-tooltip.css",
+        "dist/css/colors/average-grade-tooltip-colors.css",
+        "dist/css/formatting/average-grade-button.css",
+        "dist/css/colors/average-grade-button-colors.css"
+      ],
       "run_at": "document_idle",
       "all_frames": true
     }

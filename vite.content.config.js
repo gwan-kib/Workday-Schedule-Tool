@@ -7,7 +7,7 @@ export default defineConfig({
     viteStaticCopy({
       targets: [
         { src: "src/panel.html", dest: "" },
-        { src: "src/css", dest: "" }, // becomes dist/css/**
+        { src: "src/css", dest: "" },
         { src: "icon16.png", dest: "" },
         { src: "icon32.png", dest: "" },
         { src: "icon48.png", dest: "" },

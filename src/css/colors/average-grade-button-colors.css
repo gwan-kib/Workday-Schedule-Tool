@@ -1,0 +1,18 @@
+.wd-average-grade-button {
+  color: var(--hex-brand-main-1);
+  background-color: var(--hex-brand-accent-4);
+  box-shadow: 0 0 0 1px var(--hex-brand-main-2);
+}
+
+.wd-average-grade-button:hover {
+  background-color: var(--hex-brand-accent-6);
+  box-shadow: 0 0 0 1px var(--hex-brand-main-2);
+}
+
+.wd-average-grade-button[disabled] {
+  color: var(--hex-neutral-4);
+  background-color: var(--hex-neutral-4);
+  box-shadow: 0 0 0 1px var(--hex-neutral-4);
+  opacity: 0.9;
+}
+

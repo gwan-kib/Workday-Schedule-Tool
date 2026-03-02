@@ -2,12 +2,12 @@ import { debugFor } from "../utilities/debugTool.js";
 
 const debug = debugFor("loadMainPanel");
 
+// Loads panel HTML and CSS into the shadow root and returns UI references. Input: ShadowRoot. Output: ui object.
 export async function loadMainPanel(shadowRoot) {
   const htmlUrl = chrome.runtime.getURL("dist/panel.html");
 
   const cssFiles = [
     "formatting/widget-base.css",
-    "formatting/widget-tabs-header.css",
     "formatting/widget-header-tabs.css",
     "formatting/course-list-view.css",
     "formatting/schedule-view.css",
@@ -59,12 +59,13 @@ export async function loadMainPanel(shadowRoot) {
     root: shadowRoot,
     floatingButton: shadowRoot.querySelector("#floating-button"),
 
-    tableBody: shadowRoot.querySelector("tbody"),
-    tableHead: shadowRoot.querySelector("thead"),
+    tableBody: shadowRoot.querySelector("#course-list"),
+    tableHead: shadowRoot.querySelector("#course-sortbar"),
 
     searchInput: shadowRoot.querySelector("#widget-search"),
     refreshButton: shadowRoot.querySelector("#widget-refresh"),
     saveScheduleButton: shadowRoot.querySelector("#widget-save-schedule"),
+    clearButton: shadowRoot.querySelector("#widget-clear"),
 
     exportDropdown: shadowRoot.querySelector("#widget-export"),
     exportButton: shadowRoot.querySelector("#widget-export-button"),
@@ -75,7 +76,6 @@ export async function loadMainPanel(shadowRoot) {
 
     scheduleGrid: shadowRoot.querySelector("#schedule-grid"),
     semesterButtons: shadowRoot.querySelectorAll(".semester-button"),
-    footerConflicts: shadowRoot.querySelector("#widget-conflicts"),
 
     savedDropdown: shadowRoot.querySelector("#schedule-saved-dropdown"),
     savedMenu: shadowRoot.querySelector("#schedule-saved-menu"),
@@ -90,13 +90,11 @@ export async function loadMainPanel(shadowRoot) {
 
     helpButton: shadowRoot.querySelector(".help"),
     settingsButton: shadowRoot.querySelector(".settings"),
+
+    footerAlert: shadowRoot.querySelector("#schedule-conflict-alert"),
   };
 
-  debug.log({ id: "loadMainPanel.ui" }, "Loaded mainPanel UI refs", {
-    hasMainPanel: !!ui.mainPanel,
-    hasFloatingButton: !!ui.floatingButton,
-    hasTable: !!ui.tableBody && !!ui.tableHead,
-  });
+  debug.log({ id: "loadMainPanel.ui" }, "Loaded mainPanel UI refs", ui);
 
   return ui;
 }

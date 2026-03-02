@@ -1,9 +1,10 @@
 .widget.is-settings-view .settings {
   opacity: 1;
-  background: var(--hex-brand-main-6);
+  background: var(--hex-brand-main-3);
 }
 
 .widget.is-help-view .help {
-  background: var(--hex-brand-main-6);
+  background: var(--hex-brand-main-3);
   opacity: 1;
 }
+

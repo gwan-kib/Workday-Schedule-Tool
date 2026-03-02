@@ -3,6 +3,7 @@ import { debugFor } from "../utilities/debugTool.js";
 
 const debug = debugFor("grid");
 
+// Normalizes text for matching. Input: string. Output: normalized lowercased string.
 export const normalizeText = (s) =>
   String(s || "")
     .replace(/\u00A0/g, " ")
@@ -10,30 +11,33 @@ export const normalizeText = (s) =>
     .trim()
     .toLowerCase();
 
+// Extracts readable header text from a header element. Input: header element. Output: string.
 export function getHeaderText(headerEl) {
   if (!headerEl) return "";
 
-  const btn = headerEl.querySelector("button[title]");
-  if (btn) return (btn.getAttribute("title") || "").trim();
+  const button = headerEl.querySelector("button[title]");
+  if (button) return (button.getAttribute("title") || "").trim();
 
   return (headerEl.textContent || "").trim();
 }
 
+// Extracts the Workday header key from a header element. Input: element. Output: string or null.
 function getHeaderKey(el) {
   const a = el?.getAttribute?.("data-automation-id") || "";
   const m = a.match(/^columnHeader(\d+\.\d+)$/);
-  return m ? m[1] : null; // "252.9"
+  return m ? m[1] : null;
 }
 
+// Builds header maps for a Workday grid. Input: grid root element. Output: { colMap, posMap }.
 export function buildHeaderMaps(gridRoot) {
   const headerEls = Array.from(gridRoot.querySelectorAll('th[data-automation-id^="columnHeader"]'));
 
-  debug.log({ id: "buildHeaderMaps.headers" }, "Header elements found:", headerEls.length);
+  debug.log({ id: "buildHeaderMaps.headers" }, "Header elements found:", headerEls);
 
   const headers = headerEls
     .map((el, pos) => {
       const text = getHeaderText(el);
-      const key = getHeaderKey(el); // "252.9"
+      const key = getHeaderKey(el);
       return { el, pos, key, text, norm: normalizeText(text) };
     })
     .filter((h) => h.text);
@@ -41,7 +45,7 @@ export function buildHeaderMaps(gridRoot) {
   debug.log(
     { id: "buildHeaderMaps.parsedHeaders" },
     "Parsed headers:",
-    headers.map((h) => ({ pos: h.pos, key: h.key, text: h.text, norm: h.norm }))
+    headers.map((h) => ({ pos: h.pos, key: h.key, text: h.text, norm: h.norm })),
   );
 
   function findHeader(needles) {
@@ -67,7 +71,7 @@ export function buildHeaderMaps(gridRoot) {
 
   for (const [key, needles] of Object.entries(KEYS)) {
     const hit = findHeader(needles);
-    colMap[key] = hit ? hit.key : null; // store "252.9"
+    colMap[key] = hit ? hit.key : null;
     posMap[key] = hit ? hit.pos : -1;
 
     debug.log({ id: "buildHeaderMaps.map" }, "Mapped header:", {
@@ -80,6 +84,7 @@ export function buildHeaderMaps(gridRoot) {
   return { colMap, posMap };
 }
 
+// Finds the Workday grid root and rows. Input: none. Output: { root, rows } or null.
 export function findWorkdayGrid() {
   const roots = $$(
     document,
@@ -92,10 +97,10 @@ export function findWorkdayGrid() {
   div[data-automation-id="gridContainer"],
   div[data-automation-id="responsiveDataTable"],
   div[data-automation-id="tableContainer"]
-`
+`,
   );
 
-  debug.log({ id: "findWorkdayGrid.roots" }, "Candidate roots found:", roots.length);
+  debug.log({ id: "findWorkdayGrid.roots" }, "Candidate roots found:", roots);
 
   for (const root of roots) {
     const headerEls = $$(
@@ -106,7 +111,7 @@ export function findWorkdayGrid() {
   div[data-automation-id*="columnHeader"],
   .wd-GridHeaderCell,
   .grid-column-header
-`
+`,
     );
 
     const headerText = headerEls.map((h) => normalizeText(getHeaderText(h)));
@@ -119,17 +124,13 @@ export function findWorkdayGrid() {
         headerText.some((t) => t.includes("format")) ||
         headerText.some((t) => t.includes("status")));
 
-    debug.log({ id: "findWorkdayGrid.scanRoot" }, "Scanning root:", {
-      headerCount: headerEls.length,
-      looksRight,
-      headerText,
-    });
+    debug.log({ id: "findWorkdayGrid.scanRoot" }, "Scanning root:", { headerEls, looksRight, headerText });
 
     if (!looksRight) continue;
 
     const rows = $$(root, "tbody tr, [role='rowgroup'] [role='row'], .wd-GridRow, .grid-row");
 
-    debug.log({ id: "findWorkdayGrid.rows" }, "Rows found for matching root:", rows.length);
+    debug.log({ id: "findWorkdayGrid.rows" }, "Rows found for matching root:", rows);
 
     if (rows.length) return { root, rows };
   }

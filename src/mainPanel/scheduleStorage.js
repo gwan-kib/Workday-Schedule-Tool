@@ -4,11 +4,13 @@ const debug = debugFor("scheduleStorage");
 const STORAGE_KEY = "wdSavedSchedules";
 const MAX_SCHEDULES = 10;
 
+// Deep-clones courses for storage. Input: array of courses. Output: cloned array.
 const cloneCourses = (courses) => {
   if (typeof structuredClone === "function") return structuredClone(courses);
   return JSON.parse(JSON.stringify(courses || []));
 };
 
+// Sanitizes schedule objects for storage. Input: array of schedules. Output: sanitized array.
 const sanitizeSchedules = (schedules) => {
   if (!Array.isArray(schedules)) return [];
   return schedules
@@ -23,6 +25,7 @@ const sanitizeSchedules = (schedules) => {
 
 const useChromeStorage = typeof chrome !== "undefined" && chrome.storage && chrome.storage.local;
 
+// Loads saved schedules from storage. Input: none. Output: array of schedules.
 export async function loadSavedSchedules() {
   if (useChromeStorage) {
     return new Promise((resolve) => {
@@ -42,6 +45,7 @@ export async function loadSavedSchedules() {
   }
 }
 
+// Persists schedules to storage. Input: array of schedules. Output: none.
 export async function persistSavedSchedules(schedules) {
   const sanitized = sanitizeSchedules(schedules);
 
@@ -58,6 +62,7 @@ export async function persistSavedSchedules(schedules) {
   }
 }
 
+// Creates a snapshot object for a schedule. Input: name string, courses array. Output: schedule object.
 export function createScheduleSnapshot(name, courses) {
   const id =
     typeof crypto !== "undefined" && crypto.randomUUID
@@ -72,6 +77,7 @@ export function createScheduleSnapshot(name, courses) {
   };
 }
 
+// Formats display text for a schedule meta line. Input: schedule object. Output: string.
 export function formatScheduleMeta(schedule) {
   const count = schedule.courses?.length || 0;
   const savedDate = new Date(schedule.savedAt);
@@ -83,6 +89,7 @@ export function formatScheduleMeta(schedule) {
   return `${count} courses · Saved ${dateLabel}`;
 }
 
+// Renders saved schedule cards into the UI. Input: ui object, schedules array. Output: none.
 export function renderSavedSchedules(ui, schedules) {
   if (!ui.savedMenu) return;
 
@@ -142,13 +149,15 @@ export function renderSavedSchedules(ui, schedules) {
     ui.savedMenu.appendChild(card);
   });
 
-  debug.log({ id: "renderSavedSchedules.done" }, "Rendered saved schedules", { count: schedules.length });
+  debug.log({ id: "renderSavedSchedules.done" }, "Rendered saved schedules", schedules);
 }
 
+// Returns whether another schedule can be saved. Input: schedules array. Output: boolean.
 export function canSaveMoreSchedules(schedules) {
   return (schedules?.length || 0) < MAX_SCHEDULES;
 }
 
+// Returns the maximum schedule count. Input: none. Output: number.
 export function getMaxScheduleCount() {
   return MAX_SCHEDULES;
 }

@@ -1,5 +1,6 @@
 import { extractStartDate } from "../extraction/parsers/meetingPatternsInfo.js";
 import { debugFor } from "../utilities/debugTool.js";
+import { detectScheduleConflicts } from "./scheduleCollisions.js";
 const debug = debugFor("scheduleView");
 
 const DAYS = ["Mon", "Tue", "Wed", "Thu", "Fri"];
@@ -22,6 +23,7 @@ const SEMESTER_MONTHS = {
   second: ["01", "12"],
 };
 
+// Parses a time token into minutes since midnight. Input: token string. Output: minutes number or null.
 function parseTimeToken(token) {
   const match = String(token || "")
     .trim()
@@ -38,6 +40,7 @@ function parseTimeToken(token) {
   return hours * 60 + minutes;
 }
 
+// Parses a meeting line into days and time range. Input: line string. Output: parsed object or null.
 function parseMeetingLine(line) {
   const days = String(line || "").match(DAY_REGEX) || [];
   const timeTokens = String(line || "").match(TIME_REGEX) || [];
@@ -57,6 +60,7 @@ function parseMeetingLine(line) {
   };
 }
 
+// Maps a start date to a semester key. Input: date string (YYYY-MM-DD). Output: "first", "second", or null.
 function getSemester(startDate) {
   if (!startDate) return null;
   const month = startDate.split("-")[1];
@@ -66,24 +70,29 @@ function getSemester(startDate) {
   return null;
 }
 
+// Clamps minutes to grid bounds. Input: minutes number. Output: minutes number.
 function clampToGrid(minutes) {
   const min = START_HOUR * 60;
   const max = END_HOUR * 60;
   return Math.max(min, Math.min(max, minutes));
 }
 
+// Snaps minutes down to the nearest slot. Input: minutes number. Output: minutes number.
 function snapDownToSlot(minutes) {
   return Math.floor(minutes / SLOT_MINUTES) * SLOT_MINUTES;
 }
 
+// Snaps minutes up to the nearest slot. Input: minutes number. Output: minutes number.
 function snapUpToSlot(minutes) {
   return Math.ceil(minutes / SLOT_MINUTES) * SLOT_MINUTES;
 }
 
+// Returns the slot index for a minute value. Input: minutes number. Output: index number.
 function slotIndexOf(minutes) {
   return SLOTS.indexOf(minutes);
 }
 
+// Builds events grouped by day for a semester. Input: courses array, semester key. Output: Map of day to events array.
 function buildDayEvents(courses, semester) {
   const eventsByDay = new Map();
   DAYS.forEach((d) => eventsByDay.set(d, []));
@@ -91,20 +100,16 @@ function buildDayEvents(courses, semester) {
   const seen = new Set();
   let eventId = 0;
 
-  (courses || []).forEach((course) => {
+  (courses || []).forEach((course, courseIndex) => {
+    const colorIndex = course?.colorIndex || ((courseIndex % 7) + 1);
     const startDate = course.startDate || extractStartDate(course.meetingLines?.[0]) || "";
     const courseSemester = getSemester(startDate);
-    if (courseSemester !== semester) return;
+    if (semester && courseSemester !== semester) return;
 
     const lines = course.meetingLines?.length ? course.meetingLines : [];
 
-    const label = course.isLab
-      ? "[Laboratory]"
-      : course.isSeminar
-      ? "[Seminar]"
-      : course.isDiscussion
-      ? "[Discussion]"
-      : "";
+    const label = course.isLab ? "[LAB]" : course.isSeminar ? "[SEM]" : course.isDiscussion ? "[DISC]" : "";
+    const eventType = course.isLab ? "lab" : course.isSeminar ? "seminar" : course.isDiscussion ? "discussion" : "";
 
     lines.forEach((line) => {
       const parsed = parseMeetingLine(line);
@@ -128,6 +133,8 @@ function buildDayEvents(courses, semester) {
 
         eventsByDay.get(day).push({
           id: eventId++,
+          colorIndex,
+          eventType,
           code: course.code || "",
           title: course.title || "",
           label,
@@ -148,92 +155,14 @@ function buildDayEvents(courses, semester) {
   return eventsByDay;
 }
 
-function addConflicts(eventsByDay) {
-  const groupedByDay = new Map();
-
-  DAYS.forEach((day) => {
-    const events = (eventsByDay.get(day) || []).slice().sort((a, b) => a.startIdx - b.startIdx || a.endIdx - b.endIdx);
-
-    const groups = [];
-    let current = null;
-    let currentKey = null;
-
-    for (let r = 0; r < SLOTS.length - 1; r++) {
-      const active = events.filter((ev) => ev.startIdx <= r && ev.endIdx > r);
-      const key = active.length
-        ? active
-            .map((ev) => ev.id)
-            .sort((a, b) => a - b)
-            .join("|")
-        : null;
-
-      if (!key) {
-        if (current) groups.push(current);
-        current = null;
-        currentKey = null;
-        continue;
-      }
-
-      if (current && key === currentKey) {
-        current.end = r + 1;
-        continue;
-      }
-
-      if (current) groups.push(current);
-
-      current = { start: r, end: r + 1, events: active, hasConflict: active.length > 1 };
-      currentKey = key;
-    }
-
-    if (current) groups.push(current);
-    groupedByDay.set(day, groups);
-  });
-
-  return groupedByDay;
-}
-
-function getConflictSummaries(groupedByDay) {
-  const seen = new Set();
-  const conflicts = [];
-
-  groupedByDay.forEach((groups) => {
-    groups.forEach((group) => {
-      if (!group.hasConflict) return;
-
-      const codes = [...new Set(group.events.map((ev) => ev.code || ev.title).filter(Boolean))];
-      if (codes.length < 2) return;
-
-      codes.sort((a, b) => a.localeCompare(b));
-
-      const key = codes.join("|");
-      if (seen.has(key)) return;
-
-      seen.add(key);
-      conflicts.push(codes);
-    });
-  });
-
-  return conflicts;
-}
-
-function updateConflictFooter(ui, conflicts) {
-  if (!ui?.footerConflicts) return;
-
-  if (!conflicts.length) {
-    ui.footerConflicts.textContent = "";
-    return;
-  }
-
-  const conflictList = conflicts.map((codes) => `[${codes.join(", ")}]`).join(" ");
-  ui.footerConflicts.textContent = `⚠️ The following classes are in conflict: ${conflictList}`;
-}
-
+// Formats a time label for a slot. Input: minutes number. Output: string.
 function formatSlotLabel(minutes) {
   const h24 = Math.floor(minutes / 60);
   const m = minutes % 60;
   return `${String(h24)}:${String(m).padStart(2, "0")}`;
 }
 
+// Builds the base schedule table DOM. Input: none. Output: wrapper element.
 function buildScheduleTable() {
   const wrap = document.createElement("div");
   wrap.className = "schedule-table-wrap";
@@ -288,7 +217,8 @@ function buildScheduleTable() {
   return wrap;
 }
 
-function renderOverlayBlocks(wrap, eventsByDay) {
+// Renders overlay blocks for events. Input: wrapper element, events-by-day Map. Output: none.
+function renderOverlayBlocks(wrap, eventsByDay, conflictBlocks = []) {
   const overlay = wrap.querySelector(".schedule-overlay");
   overlay.innerHTML = "";
 
@@ -310,8 +240,8 @@ function renderOverlayBlocks(wrap, eventsByDay) {
   const borderRight = parseFloat(cellStyles.borderRightWidth) || 0;
   const borderBottom = parseFloat(cellStyles.borderBottomWidth) || 0;
 
-  const borderX = (borderLeft + borderRight) / 2;
-  const borderY = (borderTop + borderBottom) / 2;
+  const borderX = (borderLeft + borderRight) / 2.0;
+  const borderY = (borderTop + borderBottom) / 2.0;
 
   DAYS.forEach((day, dayIndex) => {
     const events = eventsByDay.get(day) || [];
@@ -322,10 +252,15 @@ function renderOverlayBlocks(wrap, eventsByDay) {
       const height = ev.rowSpan * rowHeight;
 
       const block = document.createElement("div");
-      block.className = "schedule-entry-float";
+      const colorClass = ev.colorIndex ? ` schedule-entry--color-${ev.colorIndex}` : "";
+      const subClass =
+        ev.eventType === "lab" || ev.eventType === "seminar" || ev.eventType === "discussion"
+          ? " schedule-entry--sub"
+          : "";
+      block.className = `schedule-entry-float${colorClass}${subClass}`;
       block.style.left = `${left + borderLeft}px`;
       block.style.top = `${top + borderTop}px`;
-      block.style.width = `${dayColWidth - borderX}px`;
+      block.style.width = `${dayColWidth - borderX - 0.1}px`;
       block.style.height = `${height - borderY}px`;
 
       const overlapLayer = document.createElement("div");
@@ -334,7 +269,9 @@ function renderOverlayBlocks(wrap, eventsByDay) {
 
       const text = document.createElement("div");
       text.className = "schedule-entry-text";
-      const title = ev.code || ev.title;
+      const codeMatch = String(ev.code || "").match(/^([A-Z_]+)\s*(\d+)$/);
+      const formattedCode = codeMatch ? `${codeMatch[1]} ${codeMatch[2]}` : ev.code || "";
+      const title = formattedCode || ev.title;
       const titleLabel = ev.label ? `${title} ${ev.label}` : title;
 
       text.innerHTML = `
@@ -346,8 +283,50 @@ function renderOverlayBlocks(wrap, eventsByDay) {
       overlay.appendChild(block);
     });
   });
+
+  (conflictBlocks || []).forEach((conflict) => {
+    const dayIndex = DAYS.indexOf(conflict.day);
+    if (dayIndex === -1) return;
+
+    const left = timeColWidth + dayIndex * dayColWidth;
+    const top = headerHeight + conflict.rowStart * rowHeight;
+    const height = conflict.rowSpan * rowHeight;
+    if (height <= 0) return;
+
+    const block = document.createElement("div");
+    block.className = "schedule-conflict-float";
+    block.style.left = `${left + borderLeft}px`;
+    block.style.top = `${top + borderTop}px`;
+    block.style.width = `${dayColWidth - borderX}px`;
+    block.style.height = `${height - borderY}px`;
+
+    const symbol = document.createElement("div");
+    symbol.className = "schedule-conflict-symbol";
+    symbol.textContent = "❗";
+    block.appendChild(symbol);
+
+    if (conflict.codes?.length) block.title = `Conflict: ${conflict.codes.join(", ")}`;
+
+    overlay.appendChild(block);
+  });
 }
 
+function updateFooterConflictMessage(ui, conflictCodes) {
+  const alertEl = ui?.footerAlert || ui?.root?.querySelector("#schedule-conflict-alert");
+  if (!alertEl) return;
+
+  const codes = Array.isArray(conflictCodes) ? conflictCodes.filter(Boolean) : [];
+  if (!codes.length) {
+    alertEl.textContent = "";
+    alertEl.classList.add("is-hidden");
+    return;
+  }
+
+  alertEl.textContent = `⚠️ The following classes are in conflict: [${codes.join(", ")}].`;
+  alertEl.classList.remove("is-hidden");
+}
+
+// Renders the schedule view for a semester. Input: ui object, courses array, semester key. Output: none.
 export function renderSchedule(ui, courses, semester) {
   const host = ui?.scheduleGrid || ui?.schedulePanel || ui?.scheduleContainer || ui?.scheduleView || ui?.schedule;
   if (!host) {
@@ -356,13 +335,14 @@ export function renderSchedule(ui, courses, semester) {
   }
 
   const eventsByDay = buildDayEvents(courses || [], semester);
-  const groupedByDay = addConflicts(eventsByDay);
-  const conflicts = getConflictSummaries(groupedByDay);
+  const allEventsByDay = buildDayEvents(courses || [], null);
+  const { conflictBlocks } = detectScheduleConflicts(eventsByDay);
+  const { conflictCodes } = detectScheduleConflicts(allEventsByDay);
 
   host.innerHTML = "";
   const tableWrap = buildScheduleTable();
   host.appendChild(tableWrap);
 
-  renderOverlayBlocks(tableWrap, eventsByDay);
-  updateConflictFooter(ui, conflicts);
+  renderOverlayBlocks(tableWrap, eventsByDay, conflictBlocks);
+  updateFooterConflictMessage(ui, conflictCodes);
 }

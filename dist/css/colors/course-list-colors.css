@@ -1,9 +1,145 @@
-.meeting-pill {
+.course-list-toolbar {
+  background: var(--hex-brand-accent-3);
+  border: 1px solid var(--hex-brand-accent-6);
+}
+
+.course-list-label {
   color: var(--hex-brand-main-1);
+}
+
+.course-sort-button {
+  color: var(--hex-brand-main-1);
+  border-color: var(--hex-brand-main-2);
   background: var(--hex-brand-accent-1);
 }
 
-[data-panel="list"] th {
-  color: var(--hex-brand-accent-1);
+.course-sort-button:hover {
+  background: var(--hex-brand-accent-4);
+}
+
+.course-sort-button.sorted-asc,
+.course-sort-button.sorted-desc {
+  color: var(--hex-neutral-1);
   background: var(--hex-brand-main-1);
+  border-color: var(--hex-brand-main-1);
+}
+
+.course-card {
+  background: var(--course-card-bg, var(--hex-neutral-1));
+  border-color: var(--course-card-border, var(--hex-brand-accent-4));
+  color: var(--hex-neutral-3);
+}
+
+.course-card__code,
+.course-card__title,
+.course-card__instructor {
+  color: var(--hex-neutral-3);
+}
+
+.course-code-section {
+  color: var(--hex-neutral-3);
+  background: var(--course-card-chip-bg, var(--hex-brand-accent-3));
+  border-color: var(--course-card-border, var(--hex-brand-accent-4));
+}
+
+.course-pill {
+  color: var(--hex-neutral-3);
+  background: var(--course-card-chip-bg, var(--hex-brand-accent-3));
+  border-color: var(--course-card-border, var(--hex-brand-accent-4));
+}
+
+.course-pill.is-accent {
+  color: var(--hex-neutral-1);
+  background: var(--hex-brand-main-2);
+  border-color: var(--hex-brand-main-2);
+}
+
+.course-pill.is-muted {
+  color: var(--hex-neutral-4);
+  background: var(--hex-neutral-4);
+  border-color: var(--hex-neutral-4);
+}
+
+.course-card__detail {
+  color: var(--hex-neutral-3);
+}
+
+.course-card__detail .material-symbols-rounded {
+  color: var(--hex-neutral-3);
+}
+
+/* Course card color cycle (7) with 1 sub palette (card, chip) */
+.course-card--color-1 {
+  --course-card-bg: var(--course-color-1-bg);
+  --course-card-border: var(--course-color-1-border);
+  --course-card-chip-bg: var(--course-color-1-chip);
+
+  --course-card-sub-bg: var(--course-color-1-sub-bg);
+  --course-card-sub-chip-bg: var(--course-color-1-sub-chip);
+}
+
+.course-card--color-2 {
+  --course-card-bg: var(--course-color-2-bg);
+  --course-card-border: var(--course-color-2-border);
+  --course-card-chip-bg: var(--course-color-2-chip);
+
+  --course-card-sub-bg: var(--course-color-2-sub-bg);
+  --course-card-sub-chip-bg: var(--course-color-2-sub-chip);
+}
+
+.course-card--color-3 {
+  --course-card-bg: var(--course-color-3-bg);
+  --course-card-border: var(--course-color-3-border);
+  --course-card-chip-bg: var(--course-color-3-chip);
+
+  --course-card-sub-bg: var(--course-color-3-sub-bg);
+  --course-card-sub-chip-bg: var(--course-color-3-sub-chip);
+}
+
+.course-card--color-4 {
+  --course-card-bg: var(--course-color-4-bg);
+  --course-card-border: var(--course-color-4-border);
+  --course-card-chip-bg: var(--course-color-4-chip);
+
+  --course-card-sub-bg: var(--course-color-4-sub-bg);
+  --course-card-sub-chip-bg: var(--course-color-4-sub-chip);
+}
+
+.course-card--color-5 {
+  --course-card-bg: var(--course-color-5-bg);
+  --course-card-border: var(--course-color-5-border);
+  --course-card-chip-bg: var(--course-color-5-chip);
+
+  --course-card-sub-bg: var(--course-color-5-sub-bg);
+  --course-card-sub-chip-bg: var(--course-color-5-sub-chip);
+}
+
+.course-card--color-6 {
+  --course-card-bg: var(--course-color-6-bg);
+  --course-card-border: var(--course-color-6-border);
+  --course-card-chip-bg: var(--course-color-6-chip);
+
+  --course-card-sub-bg: var(--course-color-6-sub-bg);
+  --course-card-sub-chip-bg: var(--course-color-6-sub-chip);
+}
+
+.course-card--color-7 {
+  --course-card-bg: var(--course-color-7-bg);
+  --course-card-border: var(--course-color-7-border);
+  --course-card-chip-bg: var(--course-color-7-chip);
+
+  --course-card-sub-bg: var(--course-color-7-sub-bg);
+  --course-card-sub-chip-bg: var(--course-color-7-sub-chip);
+}
+
+/* Sub variant overrides the base palette */
+.course-card--sub {
+  --course-card-bg: var(--course-card-sub-bg);
+  --course-card-chip-bg: var(--course-card-sub-chip-bg);
+}
+
+.instructor-popup-content {
+  color: var(--hex-brand-accent-5);
+  background: var(--hex-brand-main-1);
+  border: 1px solid var(--hex-brand-main-2);
 }

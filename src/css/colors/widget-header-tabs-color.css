@@ -1,50 +1,50 @@
 .widget-header,
-.widget-tabs {
-  color: var(--hex-brand-accent-1);
+.widet-toolbar {
+  color: var(--hex-brand-accent-5);
   background: var(--hex-brand-main-1);
 }
 
 #widget-title {
-  color: var(--hex-brand-accent-6);
+  color: var(--hex-brand-accent-2);
 }
 
 /* tabs */
 .tab-button {
-  color: var(--hex-brand-accent-6);
+  color: var(--hex-brand-accent-2);
   background: var(--hex-brand-main-1);
   opacity: 0.5;
 }
 
 .tab-button:hover {
-  background: var(--hex-brand-main-6);
+  background: var(--hex-brand-main-3);
   opacity: 0.75;
 }
 
 .tab-button.is-active {
   opacity: 1;
-  background: var(--hex-brand-main-6);
+  background: var(--hex-brand-main-3);
 }
 
 /* buttons */
-.btn {
+.button {
   border: none;
 
-  color: var(--hex-brand-accent-6);
+  color: var(--hex-brand-accent-2);
   background: var(--hex-brand-main-1);
 }
 
-.btn:hover {
+.button:hover {
   opacity: 0.75;
-  background: var(--hex-brand-main-6);
+  background: var(--hex-brand-main-3);
 }
 
-.btn:active {
+.button:active {
   opacity: 1;
 }
 
 /* settings/help icons */
 .settings .material-symbols-rounded {
-  color: var(--hex-brand-accent-3);
+  color: var(--hex-brand-accent-4);
   font-variation-settings:
     "FILL" 1,
     "wght" 400,
@@ -53,7 +53,7 @@
 }
 
 .help .material-symbols-rounded {
-  color: var(--hex-brand-accent-3);
+  color: var(--hex-brand-accent-4);
   font-variation-settings:
     "FILL" 1,
     "wght" 800,
@@ -62,7 +62,7 @@
 }
 
 .settings:hover .material-symbols-rounded {
-  text-shadow: 0 0 10px var(--hex-brand-main-8);
+  text-shadow: 0 0 10px var(--hex-brand-main-3);
   transition: all 0.3s ease;
 }
 
@@ -102,8 +102,8 @@
 
 /* export dropdown */
 .export-menu {
-  background: var(--hex-brand-accent-8);
-  border-color: var(--hex-brand-main-3);
+  background: var(--hex-brand-accent-1);
+  border-color: var(--hex-brand-accent-1);
 }
 
 .export-option {
@@ -112,5 +112,6 @@
 }
 
 .export-option:hover {
-  background: var(--hex-brand-accent-9);
+  background: var(--hex-brand-accent-6);
 }
+

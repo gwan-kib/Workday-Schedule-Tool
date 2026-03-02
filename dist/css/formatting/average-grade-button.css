@@ -1,0 +1,35 @@
+.wd-average-grade-button {
+  margin-right: 10px;
+  padding: 4px 8px;
+  font-size: 12px;
+  font-weight: 500;
+  letter-spacing: 0.2px;
+  line-height: 1.1;
+  border-radius: 5px;
+  border: none;
+  outline: none;
+  cursor: pointer;
+  transition: all .2s ease-in;
+
+  width: 110px;
+  height: 40px;
+  box-sizing: border-box;
+  text-align: center;
+  white-space: pre-line;
+  display: inline-flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+
+  font-family:
+    system-ui,
+    -apple-system,
+    Segoe UI,
+    Roboto,
+    Arial;
+}
+
+.wd-average-grade-button[disabled] {
+  cursor: default;
+}
+
