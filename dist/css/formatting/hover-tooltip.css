@@ -1,0 +1,51 @@
+.wd-hover-tooltip {
+  position: relative;
+}
+
+.schedule-conflict-float.wd-hover-tooltip {
+  position: absolute;
+}
+
+.widget.is-hover-tooltips-off .wd-hover-tooltip::after,
+.widget.is-hover-tooltips-off .wd-hover-tooltip::before {
+  display: none;
+}
+
+.wd-hover-tooltip::after,
+.wd-hover-tooltip::before {
+  position: absolute;
+  left: 50%;
+  opacity: 0;
+  pointer-events: none;
+  transition: all .2s ease;
+  transform: translateX(-50%) translateY(2px);
+}
+
+.wd-hover-tooltip::after {
+  content: attr(data-tooltip);
+  bottom: calc(100% + 8px);
+  z-index: 20;
+  padding: 6px 10px;
+  border-radius: 999px;
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  white-space: pre;
+}
+
+.wd-hover-tooltip::before {
+  content: "";
+  bottom: calc(100% + 2px);
+  z-index: 19;
+  border-width: 6px 6px 0 6px;
+  border-style: solid;
+  border-color: var(--wd-hover-tooltip-bg) transparent transparent transparent;
+}
+
+.wd-hover-tooltip:hover::after,
+.wd-hover-tooltip:hover::before,
+.wd-hover-tooltip:focus-visible::after,
+.wd-hover-tooltip:focus-visible::before {
+  opacity: 1;
+  transform: translateX(-50%) translateY(0);
+}

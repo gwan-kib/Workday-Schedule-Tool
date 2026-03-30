@@ -1,7 +1,8 @@
 import { $$ } from "../utilities/dom";
-import { debugFor } from "../utilities/debugTool.js";
+import { debugFor, debugLog } from "../utilities/debugTool.js";
 
 const debug = debugFor("rowCellReader");
+debugLog({ local: { rowCellReader: false } });
 
 // Extracts the Workday column key from a cell. Input: cell element. Output: key string or null.
 function getCellWorkdayKey(cell) {

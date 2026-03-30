@@ -1,6 +1,6 @@
 import { $$ } from "../utilities/dom.js";
-import { debugFor } from "../utilities/debugTool.js";
-import { buildHeaderMaps, findWorkdayGrid } from "./grid.js";
+import { debugFor, debugLog } from "../utilities/debugTool.js";
+import { buildHeaderMaps, findWorkdayGrids } from "./grid.js";
 import { parseSectionLinkString } from "./parsers/sectionLinkInfo.js";
 import {
   extractMeetingLines,
@@ -12,32 +12,107 @@ import {
 import { createRowCellReader } from "./rowCellReader.js";
 
 const debug = debugFor("courseExtraction");
+debugLog({ local: { courseExtraction: false } });
 
-// Extracts courses from the Workday grid. Input: none. Output: array of course objects.
-export async function extractCoursesData() {
+function extractCoursesFromGrid(found) {
+  if (!found) return [];
+
+  const headerMaps = buildHeaderMaps(found.root);
+  const courses = [];
+
+  debug.log({ id: "extractCoursesData.headerMaps" }, "Built header maps:", headerMaps);
+
+  for (const row of found.rows) {
+    const c = extractFromRow(row, headerMaps);
+    if (c && (c.code || c.title) && Object.values(c).join("").trim()) courses.push(c);
+  }
+
+  return removeDuplicateCourses(courses);
+}
+
+function summarizeCourseNames(courses) {
+  const seen = new Set();
+  const names = [];
+
+  for (const course of courses) {
+    const code = String(course?.code || "").trim();
+    const label = code;
+
+    if (!label) continue;
+
+    const key = label.toLowerCase();
+    if (seen.has(key)) continue;
+
+    seen.add(key);
+    names.push(label);
+  }
+
+  return names;
+}
+
+// Extracts courses from the Workday grids. Input: optional selector callback. Output: array of course objects or null on cancel.
+export async function extractCoursesData({ selectSchedule } = {}) {
   debug.log({ id: "extractCoursesData.start" }, "Starting course extraction");
 
-  const found = findWorkdayGrid();
-  let courses = [];
+  const found = findWorkdayGrids();
 
   debug.log({ id: "extractCoursesData.tables" }, "findWorkdayGrid() result:", found);
 
-  if (found) {
-    const headerMaps = buildHeaderMaps(found.root);
+  const candidates = found
+    .map((grid, index) => {
+      const courses = extractCoursesFromGrid(grid);
+      if (!courses.length) return null;
 
-    debug.log({ id: "extractCoursesData.headerMaps" }, "Built header maps:", headerMaps);
+      return {
+        id: `schedule-${index + 1}`,
+        title: `Schedule ${index + 1}`,
+        courses,
+        courseNames: summarizeCourseNames(courses),
+      };
+    })
+    .filter(Boolean);
 
-    for (const row of found.rows) {
-      const c = extractFromRow(row, headerMaps);
-      if (c && (c.code || c.title) && Object.values(c).join("").trim()) courses.push(c);
-    }
+  debug.log(
+    { id: "extractCoursesData.candidates" },
+    "Parsable schedule candidates found:",
+    candidates.map((candidate) => ({
+      id: candidate.id,
+      title: candidate.title,
+      courseCount: candidate.courses.length,
+      courseNames: candidate.courseNames,
+    })),
+  );
+
+  if (!candidates.length) {
+    debug.log({ id: "extractCoursesData.done" }, "Extraction complete:", []);
+    return [];
   }
 
-  const unique = removeDuplicateCourses(courses);
+  if (candidates.length === 1 || typeof selectSchedule !== "function") {
+    debug.log({ id: "extractCoursesData.done" }, "Extraction complete:", candidates[0].courses);
+    return candidates[0].courses;
+  }
 
-  debug.log({ id: "extractCoursesData.done" }, "Extraction complete:", unique);
+  const selectedId = await selectSchedule(
+    candidates.map((candidate) => ({
+      id: candidate.id,
+      title: candidate.title,
+      courseNames: candidate.courseNames,
+      courseCount: candidate.courses.length,
+    })),
+  );
 
-  return unique;
+  if (!selectedId) {
+    debug.log({ id: "extractCoursesData.cancelled" }, "Schedule selection cancelled");
+    return null;
+  }
+
+  const selected = candidates.find((candidate) => candidate.id === selectedId);
+  const extractedCourses = selected?.courses || null;
+
+  debug.log({ id: "extractCoursesData.done" }, "Extraction complete:", extractedCourses);
+
+  return extractedCourses;
 }
 
 // Deduplicates courses by code/title/section. Input: array of courses. Output: array of unique courses.
@@ -119,8 +194,8 @@ export function extractFromRow(row, headerMaps) {
 
   const getInstructionalFormatAbbr = (text) => {
     if (labLike(text)) return "Lab";
-    if (seminarLike(text)) return "Sem";
-    if (discussionLike(text)) return "Disc";
+    if (seminarLike(text)) return "Seminar";
+    if (discussionLike(text)) return "Discussion";
     return (text || "").trim();
   };
 

@@ -3,7 +3,7 @@ _Not affiliated with or endorsed by Workday._
 <div align="center">
   <img src="icon128.png" width="128px" height="128px" alt="Workday Calendar Tool logo">
 
-# Workday - Schedule Tool
+# UBC Workday - Schedule Tool
 
 <h3 style="margin:0;">Simplify your semester.<br>Visualize your schedule.<br>Export it when you're ready.</h3>
 
@@ -34,8 +34,10 @@ If you use Workday for registration, this helps you:
 6. Save schedules in the extension
 7. Export to calendar if needed
 
+Optional: open the extension from the Chrome toolbar popup to preview your saved default schedule outside the Workday page.
+
 - still stuck? check out https://docs.google.com/document/d/1D0YqHct_d3rR8WtlkHF9Dybqb3mFB7Wka0ZWsFZOda8/edit?tab=t.0
-  
+
 ---
 
 ## Features
@@ -70,6 +72,12 @@ All snapshots stay on your device.
 
 ---
 
+### Professor Ratings
+
+- See Rate My Professors ratings directly in the course list when a supported instructor match is found
+
+---
+
 ### Calendar Export (.ics)
 
 Export to a standard `.ics` file that works with:
@@ -101,14 +109,15 @@ Want to request a feature? Let me know: gwantanak.3@gmail.com
 
 ## Privacy and Security
 
-Your data stays on your device.
+Your schedule data stays on your device in Chrome storage.
 
 - Works only on `*.myworkday.com`
-- Schedule data stored locally using Chrome storage
-- No external servers
+- Saved schedule data is stored locally using Chrome storage
+- Uses ubcgrades.com for class averages
+- Uses ratemyprofessors.com for professor ratings
 - No tracking
 - No third-party analytics
-- No data collection
+- No data collection for analytics/advertising
 
 ---
 

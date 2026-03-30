@@ -1,22 +1,19 @@
 import { on, debounce } from "./utilities/dom.js";
 import { STATE } from "./core/state.js";
 import { ensureMount } from "./utilities/shadowMount.js";
+import { debugFor, debugLog } from "./utilities/debugTool.js";
 
-import { loadMainPanel } from "./mainPanel/loadMainPanel.js";
 import { extractCoursesData } from "./extraction/index.js";
-
-import { filterCourses, sortCourses, wireTableSorting } from "./mainPanel/courseViewSorting.js";
-import { renderCourseRows } from "./mainPanel/renderCourseRows.js";
-import { renderSchedule } from "./mainPanel/scheduleView.js";
-
+import { setupRegistrationAverageButtons } from "./averageGrades/registrationAverageButtons.js";
 import { exportICS } from "./exportLogic/exportIcs.js";
-
-import {
-  fetchSectionGradesWithFallback,
-  parseCourseInfoFromPromptText,
-  readTermCampus,
-} from "./averageGrades/gradesApiCall.js";
-
+import { loadMainPanel } from "./mainPanel/loadMainPanel.js";
+import { createCourseColorController } from "./mainPanel/courseColorController.js";
+import { initializeHoverTooltipController } from "./mainPanel/hoverTooltipController.js";
+import { createPanelViewController } from "./mainPanel/panelViewController.js";
+import { createScheduleModalController, createSchedulePickerController } from "./mainPanel/scheduleModals.js";
+import { filterCourses, sortCourses, wireTableSorting } from "./mainPanel/courseViewSorting.js";
+import { renderCourseObjects } from "./mainPanel/renderCourseObjects.js";
+import { renderSchedule } from "./mainPanel/scheduleView.js";
 import {
   canSaveMoreSchedules,
   createScheduleSnapshot,
@@ -24,208 +21,98 @@ import {
   loadSavedSchedules,
   persistSavedSchedules,
   renderSavedSchedules,
+  togglePreferredSchedule,
 } from "./mainPanel/scheduleStorage.js";
 
-const MAX_COURSE_COLORS = 7;
-
-// Assigns stable color indices to courses if missing. Input: courses array. Output: none.
-const assignCourseColors = (courses) => {
-  if (!Array.isArray(courses)) return;
-
-  const getCourseKey = (course) => {
-    if (!course) return "";
-    const code = String(course.code || "").trim().toUpperCase();
-    const title = String(course.title || "").trim().toUpperCase();
-    if (code || title) return `${code}||${title}`;
-    return String(course.section_number || "").trim().toUpperCase();
-  };
-
-  const isLecture = (course) => !(course?.isLab || course?.isSeminar || course?.isDiscussion);
-  const hasValidColor = (course) =>
-    Number.isInteger(course?.colorIndex) && course.colorIndex >= 1 && course.colorIndex <= MAX_COURSE_COLORS;
-
-  let colorCursor = 0;
-  const colorByKey = new Map();
-
-  const nextColor = () => {
-    colorCursor += 1;
-    return ((colorCursor - 1) % MAX_COURSE_COLORS) + 1;
-  };
-
-  // First pass: assign base colors to lecture sections only (per course key).
-  courses.forEach((course) => {
-    if (!course) return;
-    const key = getCourseKey(course);
-    if (hasValidColor(course)) {
-      if (key && !colorByKey.has(key)) colorByKey.set(key, course.colorIndex);
-      return;
-    }
-    if (!isLecture(course)) return;
-    if (key && colorByKey.has(key)) {
-      course.colorIndex = colorByKey.get(key);
-      return;
-    }
-    const colorIndex = nextColor();
-    course.colorIndex = colorIndex;
-    if (key) colorByKey.set(key, colorIndex);
-  });
-
-  // Second pass: apply lecture color to labs/seminars/discussions (or any remaining).
-  courses.forEach((course) => {
-    if (!course) return;
-    if (hasValidColor(course)) {
-      const key = getCourseKey(course);
-      if (key && !colorByKey.has(key)) colorByKey.set(key, course.colorIndex);
-      return;
-    }
-    const key = getCourseKey(course);
-    if (key && colorByKey.has(key)) {
-      course.colorIndex = colorByKey.get(key);
-      return;
-    }
-    const colorIndex = nextColor();
-    course.colorIndex = colorIndex;
-    if (key) colorByKey.set(key, colorIndex);
-  });
-};
+const debug = debugFor("content");
+debugLog({ local: { content: false } });
 
 // Bootstraps the content script UI and event wiring. Input: none. Output: none.
 (() => {
-  console.log("[WD] content script loaded");
-
   async function boot() {
+    debug.log({ id: "boot.start" }, "Booting content script");
+
+    // Mount the extension UI, then hand feature-specific responsibilities off to the
+    // smaller controllers so this file mostly stays as the top-level coordinator.
     const shadowRoot = ensureMount();
     const ui = await loadMainPanel(shadowRoot);
+    const courseColorController = await createCourseColorController(ui);
+    await initializeHoverTooltipController(ui, STATE.view);
+    const { setActiveView, toggleMainPanel } = createPanelViewController(ui, STATE.view);
+    const { openScheduleModal } = createScheduleModalController(ui);
+    const { openSchedulePickerModal } = createSchedulePickerController(ui);
 
+    // Rebuild the visual views from shared STATE whenever schedule data or view settings change.
     const updateScheduleView = () => {
-      renderSchedule(ui, STATE.filtered, STATE.view.semester);
+      renderSchedule(ui, STATE.filtered, STATE.view.semester, STATE.view.timeFormat);
+
+      const toggleButton = ui.scheduleGrid?.querySelector(".schedule-time-toggle");
+      if (toggleButton) {
+        toggleButton.textContent = STATE.view.timeFormat === "am/pm" ? "AM/PM" : "24H";
+        toggleButton.setAttribute("aria-pressed", String(STATE.view.timeFormat === "am/pm"));
+        on(toggleButton, "click", () => {
+          STATE.view.timeFormat = STATE.view.timeFormat === "am/pm" ? "24h" : "am/pm";
+          updateScheduleView();
+        });
+      }
     };
 
+    // Render all main data-driven UI surfaces together so list/schedule views stay in sync.
     const renderAll = () => {
-      sortCourses(STATE.sort.key || "code");
-      renderCourseRows(ui, STATE.filtered);
+      if (STATE.sort?.key) sortCourses(STATE.sort.key);
       updateScheduleView();
+      renderCourseObjects(ui, STATE.filtered);
     };
 
-    const isMainPanel = (viewKey) => viewKey === STATE.view.panel;
-
-    const setActiveView = (viewKey) => {
-      if (isMainPanel(viewKey)) {
-        STATE.view.lastMainPanel = viewKey;
-      }
-      STATE.view.panel = viewKey;
-
-      ui.views.forEach((el) => el.classList.toggle("is-active", el.dataset.panel === viewKey));
-      ui.viewTabs.forEach((button) => button.classList.toggle("is-active", button.dataset.panel === viewKey));
-
-      ui.mainPanel.classList.toggle("is-schedule-view", viewKey === "schedule");
-      ui.mainPanel.classList.toggle("is-settings-view", viewKey === "settings");
-      ui.mainPanel.classList.toggle("is-help-view", viewKey === "help");
-    };
-
-    const syncFloatingButtonState = () => {
-      ui.floatingButton.classList.toggle("is-collapsed", ui.mainPanel.classList.contains("is-hidden"));
-    };
-
-    const toggleMainPanel = () => {
-      ui.mainPanel.classList.toggle("is-hidden");
-      syncFloatingButtonState();
-    };
-
-    syncFloatingButtonState();
-
-    let resolveScheduleModal = null;
-
-    const closeScheduleModal = (value) => {
-      if (!ui.saveModal) return;
-
-      ui.saveModal.classList.add("is-hidden");
-      ui.saveModal.setAttribute("aria-hidden", "true");
-
-      if (resolveScheduleModal) {
-        resolveScheduleModal(value);
-        resolveScheduleModal = null;
-      }
-    };
-
-    const openScheduleModal = ({ title, message, confirmLabel = "Save", showInput = true, showCancel = true }) => {
-      if (!ui.saveModal) return Promise.resolve(null);
-
-      ui.saveModalTitle.textContent = title;
-      ui.saveModalMessage.textContent = message;
-      ui.saveModalConfirm.textContent = confirmLabel;
-
-      ui.saveModalField.classList.toggle("is-hidden", !showInput);
-      ui.saveModalCancel.classList.toggle("is-hidden", !showCancel);
-
-      ui.saveModalInput.value = "";
-      ui.saveModalInput.classList.remove("is-invalid");
-
-      ui.saveModal.classList.remove("is-hidden");
-      ui.saveModal.setAttribute("aria-hidden", "false");
-
-      if (showInput) ui.saveModalInput.focus();
-      else ui.saveModalConfirm.focus();
-
-      return new Promise((resolve) => {
-        resolveScheduleModal = resolve;
+    // Extract the current page's schedule data from Workday, normalize it into STATE,
+    // and preserve the current UI when requested.
+    const loadCoursesFromPage = async ({ preserveExisting = false } = {}) => {
+      debug.log({ id: "loadCoursesFromPage.start" }, "Loading courses from page", { preserveExisting });
+      const extractedCourses = await extractCoursesData({
+        selectSchedule: (options) =>
+          openSchedulePickerModal({
+            title: "Select a schedule",
+            message: "Multiple schedule tables detected. Select the one you would like to load:",
+            options,
+          }),
       });
-    };
 
-    if (ui.saveModal) {
-      on(ui.saveModal, "click", (event) => {
-        if (event.target === ui.saveModal) return closeScheduleModal(null);
-
-        const action = event.target.closest("[data-action]")?.dataset.action;
-        if (!action) return;
-
-        if (action === "close" || action === "cancel") return closeScheduleModal(null);
-
-        if (action === "confirm") {
-          const needsInput = !ui.saveModalField.classList.contains("is-hidden");
-          if (needsInput) {
-            const value = ui.saveModalInput.value.trim();
-            if (!value) {
-              ui.saveModalInput.classList.add("is-invalid");
-              ui.saveModalInput.focus();
-              return;
-            }
-            return closeScheduleModal(value);
-          }
-          return closeScheduleModal(true);
+      if (extractedCourses === null) {
+        debug.warn({ id: "loadCoursesFromPage.noCourses" }, "No courses were extracted", { preserveExisting });
+        if (!preserveExisting) {
+          STATE.courses = [];
+          STATE.filtered = [];
+          STATE.currentSavedScheduleId = null;
+          STATE.currentScheduleName = null;
+          renderSavedSchedules(ui, STATE.savedSchedules, STATE.currentSavedScheduleId);
         }
-      });
+        return false;
+      }
 
-      on(ui.saveModalInput, "input", () => ui.saveModalInput.classList.remove("is-invalid"));
-      on(ui.saveModalInput, "keydown", (event) => {
-        if (event.key === "Enter") ui.saveModalConfirm.click();
+      STATE.courses = extractedCourses;
+      courseColorController.assignCourseColors(STATE.courses);
+      STATE.currentSavedScheduleId = null;
+      STATE.currentScheduleName = null;
+      renderSavedSchedules(ui, STATE.savedSchedules, STATE.currentSavedScheduleId);
+      filterCourses(ui.searchInput.value);
+      debug.log({ id: "loadCoursesFromPage.complete" }, "Loaded courses from page", {
+        courseCount: STATE.courses.length,
       });
+      return true;
+    };
 
-      on(document, "keydown", (event) => {
-        if (event.key === "Escape" && !ui.saveModal.classList.contains("is-hidden")) closeScheduleModal(null);
-      });
-    }
-
+    // Tab buttons only switch between the already-mounted views; they do not rebuild the UI shell.
     ui.viewTabs.forEach((button) => {
       on(button, "click", () => {
         setActiveView(button.dataset.panel);
-        if (button.dataset.panel === "schedule") updateScheduleView();
+        if (button.dataset.panel === "schedule-panel") updateScheduleView();
       });
     });
 
-    ui.semesterButtons.forEach((button) => {
-      on(button, "click", () => {
-        STATE.view.semester = button.dataset.semester;
-
-        ui.semesterButtons.forEach((b) => b.classList.toggle("is-active", b.dataset.semester === STATE.view.semester));
-        updateScheduleView();
-      });
-    });
-
-    on(ui.floatingButton, "click", toggleMainPanel);
-
+    // Export behaves like a small dropdown menu, so these handlers keep its open/close state in sync.
     const setExportOpen = (isOpen) => {
       if (!ui.exportDropdown || !ui.exportButton) return;
+      debug.log({ id: "setExportOpen" }, "Setting export dropdown state", { isOpen });
       ui.exportDropdown.classList.toggle("is-open", isOpen);
       ui.exportButton.setAttribute("aria-expanded", String(isOpen));
     };
@@ -247,31 +134,28 @@ const assignCourseColors = (courses) => {
       }
     });
 
-    chrome.runtime.onMessage.addListener((message) => {
-      if (message?.type === "TOGGLE_WIDGET") toggleMainPanel();
-    });
-
+    // These controls manage the live schedule currently loaded from the page.
     on(ui.refreshButton, "click", async () => {
       ui.refreshButton.classList.remove("rotate");
       void ui.refreshButton.offsetWidth;
       ui.refreshButton.classList.add("rotate");
 
-      STATE.courses = await extractCoursesData();
-      assignCourseColors(STATE.courses);
-      STATE.currentScheduleName = null;
-      filterCourses(ui.searchInput.value);
-      renderAll();
+      const loaded = await loadCoursesFromPage({ preserveExisting: true });
+      if (loaded) renderAll();
     });
 
     on(ui.clearButton, "click", () => {
       STATE.courses = [];
       STATE.filtered = [];
+      STATE.currentSavedScheduleId = null;
       STATE.currentScheduleName = null;
       ui.searchInput.value = "";
       renderAll();
+      renderSavedSchedules(ui, STATE.savedSchedules, STATE.currentSavedScheduleId);
     });
 
     const handleExport = async (type) => {
+      debug.log({ id: "handleExport" }, "Handling export action", { type });
       if (type === "ics") exportICS(STATE.currentScheduleName);
     };
 
@@ -283,7 +167,29 @@ const assignCourseColors = (courses) => {
       await handleExport(action.dataset.export);
     });
 
+    // Settings/help live inside the same shell as the main views, so this helper swaps
+    // into those utility panels and back out to the last main panel when toggled again.
+    const showUtilityPanel = (panelKey) => {
+      debug.log({ id: "showUtilityPanel" }, "Showing utility panel", {
+        panelKey,
+        currentPanel: STATE.view.panel,
+      });
+      ui.mainPanel.classList.remove("is-hidden");
+      ui.floatingButton.classList.remove("is-collapsed");
+
+      if (STATE.view.panel === panelKey) {
+        const backTo = STATE.view.lastMainPanel || "course-list-panel";
+        setActiveView(backTo);
+        if (backTo === "schedule-panel") updateScheduleView();
+        return;
+      }
+
+      setActiveView(panelKey);
+    };
+
+    // Saved schedule actions persist snapshots of the currently filtered schedule and restore them later.
     on(ui.saveScheduleButton, "click", async () => {
+      debug.log({ id: "saveSchedule.click" }, "Save schedule button clicked");
       if (!canSaveMoreSchedules(STATE.savedSchedules)) {
         await openScheduleModal({
           title: "Schedule limit reached",
@@ -305,27 +211,41 @@ const assignCourseColors = (courses) => {
 
       if (!name) return;
 
-      const snapshot = createScheduleSnapshot(name, STATE.filtered);
+      const snapshot = createScheduleSnapshot(name, STATE.filtered, courseColorController.getAssignments());
+      if (!STATE.savedSchedules.length) snapshot.isFavorite = true;
       STATE.savedSchedules = [snapshot, ...STATE.savedSchedules];
+      debug.log({ id: "saveSchedule.saved" }, "Saved schedule snapshot", {
+        scheduleName: name,
+        scheduleCount: STATE.savedSchedules.length,
+      });
 
       await persistSavedSchedules(STATE.savedSchedules);
-      renderSavedSchedules(ui, STATE.savedSchedules);
+      renderSavedSchedules(ui, STATE.savedSchedules, STATE.currentSavedScheduleId);
 
       if (ui.savedDropdown) ui.savedDropdown.open = true;
     });
 
     on(ui.savedMenu, "click", async (event) => {
       const actionButton = event.target.closest("[data-action]");
-      if (!actionButton) return;
-
-      const card = actionButton.closest(".schedule-saved-card");
+      const card = event.target.closest(".schedule-saved-card");
       const scheduleId = card?.dataset.id;
       if (!scheduleId) return;
 
       const selected = STATE.savedSchedules.find((s) => s.id === scheduleId);
       if (!selected) return;
 
-      if (actionButton.dataset.action === "delete") {
+      if (actionButton?.dataset.action === "favorite") {
+        event.stopPropagation();
+        STATE.savedSchedules = togglePreferredSchedule(STATE.savedSchedules, scheduleId);
+        await persistSavedSchedules(STATE.savedSchedules);
+        renderSavedSchedules(ui, STATE.savedSchedules, STATE.currentSavedScheduleId);
+        if (ui.savedDropdown) ui.savedDropdown.open = true;
+        return;
+      }
+
+      if (actionButton?.dataset.action === "delete") {
+        event.stopPropagation();
+        debug.log({ id: "savedMenu.delete" }, "Deleting saved schedule", { scheduleId, scheduleName: selected.name });
         const confirmed = await openScheduleModal({
           title: "Permanently Delete Schedule?",
           message: `This action will permanently delete "${selected.name}".`,
@@ -336,44 +256,48 @@ const assignCourseColors = (courses) => {
         if (!confirmed) return;
 
         STATE.savedSchedules = STATE.savedSchedules.filter((s) => s.id !== scheduleId);
+        if (STATE.currentSavedScheduleId === scheduleId) STATE.currentSavedScheduleId = null;
         await persistSavedSchedules(STATE.savedSchedules);
-        renderSavedSchedules(ui, STATE.savedSchedules);
+        renderSavedSchedules(ui, STATE.savedSchedules, STATE.currentSavedScheduleId);
         return;
       }
 
+      STATE.currentSavedScheduleId = scheduleId;
       STATE.currentScheduleName = selected.name;
+      debug.log({ id: "savedMenu.load" }, "Loading saved schedule", { scheduleId, scheduleName: selected.name });
+      if (selected.colorAssignments) {
+        await courseColorController.applyAndPersistCourseColors(selected.colorAssignments);
+      }
+
       STATE.courses = [...selected.courses];
-      assignCourseColors(STATE.courses);
-      STATE.filtered = [...selected.courses];
+      courseColorController.assignCourseColors(STATE.courses);
+      STATE.filtered = [...STATE.courses];
       ui.searchInput.value = "";
 
       renderAll();
-      setActiveView("schedule");
+      renderSavedSchedules(ui, STATE.savedSchedules, STATE.currentSavedScheduleId);
+      setActiveView("course-list-panel");
       if (ui.savedDropdown) ui.savedDropdown.open = false;
     });
 
+    on(ui.savedMenu, "keydown", (event) => {
+      const card = event.target.closest(".schedule-saved-card");
+      if (!card) return;
+
+      if (event.key !== "Enter" && event.key !== " ") return;
+      if (event.target.closest("[data-action]")) return;
+
+      event.preventDefault();
+      card.click();
+    });
+
+    // Settings/help buttons are thin wrappers around the shared panel-switching helper above.
     on(ui.settingsButton, "click", () => {
-      ui.mainPanel.classList.remove("is-hidden");
-      ui.floatingButton.classList.remove("is-collapsed");
-      if (STATE.view.panel === "settings") {
-        const backTo = STATE.view.lastMainPanel || "list";
-        setActiveView(backTo);
-        if (backTo === "schedule") updateScheduleView();
-        return;
-      }
-      setActiveView("settings");
+      showUtilityPanel("settings-panel");
     });
 
     on(ui.helpButton, "click", () => {
-      ui.mainPanel.classList.remove("is-hidden");
-      ui.floatingButton.classList.remove("is-collapsed");
-      if (STATE.view.panel === "help") {
-        const backTo = STATE.view.lastMainPanel || "list";
-        setActiveView(backTo);
-        if (backTo === "schedule") updateScheduleView();
-        return;
-      }
-      setActiveView("help");
+      showUtilityPanel("help-panel");
     });
 
     on(
@@ -385,155 +309,26 @@ const assignCourseColors = (courses) => {
       }, 100),
     );
 
+    // Initial startup restores saved state, loads the current page's schedule, and then
+    // enables the extra page-level average buttons that live outside the panel UI.
     wireTableSorting(ui);
 
     STATE.savedSchedules = await loadSavedSchedules();
-    renderSavedSchedules(ui, STATE.savedSchedules);
+    debug.log({ id: "boot.savedSchedulesLoaded" }, "Loaded saved schedules", {
+      scheduleCount: STATE.savedSchedules.length,
+    });
+    renderSavedSchedules(ui, STATE.savedSchedules, STATE.currentSavedScheduleId);
 
-    STATE.courses = await extractCoursesData();
-    assignCourseColors(STATE.courses);
-    STATE.filtered = [...STATE.courses];
+    await loadCoursesFromPage();
 
-    STATE.sort = STATE.sort || { key: "code", dir: 1 };
-    sortCourses("code");
-
-    renderCourseRows(ui, STATE.filtered);
-    updateScheduleView();
+    renderAll();
 
     setActiveView(STATE.view.panel);
-
-    let termCampus = readTermCampus();
-
-    const extractAverage = (data) => {
-      if (!data) return null;
-      if (Array.isArray(data)) {
-        for (const item of data) {
-          const avg = extractAverage(item);
-          if (avg != null) return avg;
-        }
-        return null;
-      }
-      if (typeof data !== "object") return null;
-      const direct =
-        data.average ?? data.avg ?? data.average_grade ?? data.averagePercent ?? data.avgPercent ?? data.mean ?? null;
-      if (typeof direct === "number") return direct;
-      if (typeof direct === "string" && direct.trim()) return direct.trim();
-
-      const nested = data?.grades?.average ?? data?.grades?.avg ?? data?.summary?.average ?? data?.summary?.avg ?? null;
-      if (typeof nested === "number") return nested;
-      if (typeof nested === "string" && nested.trim()) return nested.trim();
-
-      return null;
-    };
-
-    const buildAverageLabel = (average) => {
-      if (average == null) return "Average:\nN/A";
-      if (typeof average === "number") return `Average:\n${average.toFixed(1)}%`;
-      return `Average:\n${average}%`;
-    };
-
-    const hasValidAverage = (data) => extractAverage(data) != null;
-
-    const createAverageButton = (courseInfo) => {
-      const button = document.createElement("button");
-      button.type = "button";
-      button.className = "wd-average-grade-button";
-      button.textContent = "Class Average\n(past 5 years)";
-
-      button.addEventListener("click", async (event) => {
-        event.preventDefault();
-        event.stopPropagation();
-
-        if (button.dataset.loading === "true") return;
-        button.dataset.loading = "true";
-        button.textContent = "loading...";
-        button.disabled = true;
-
-        termCampus = readTermCampus() || termCampus;
-        if (!termCampus) {
-          button.textContent = "Average:\nunavailable";
-          button.disabled = false;
-          button.dataset.loading = "false";
-          return;
-        }
-
-        try {
-          const data = await fetchSectionGradesWithFallback(
-            {
-              campus: termCampus.campus,
-              yearsession: termCampus.yearsession,
-              subject: courseInfo.subject,
-              course: courseInfo.course,
-              section: courseInfo.section,
-            },
-            { isValid: hasValidAverage },
-          );
-
-          if (!data) {
-            button.textContent = "Average:\nunavailable";
-          } else {
-            const avg = extractAverage(data);
-            button.textContent = buildAverageLabel(avg);
-          }
-        } catch (error) {
-          button.textContent = "Average:\nunavailable";
-        } finally {
-          button.disabled = false;
-          button.dataset.loading = "false";
-        }
-      });
-
-      return button;
-    };
-
-    const ensureAverageButton = (headerWrapper) => {
-      if (!headerWrapper || !(headerWrapper instanceof Element)) return;
-      if (headerWrapper.previousElementSibling?.classList?.contains("wd-average-grade-button")) return;
-
-      const parentElement = headerWrapper.parentElement;
-      if (parentElement) {
-        parentElement.style.display = "flex";
-        parentElement.style.alignItems = "center";
-      }
-
-      const promptOption = headerWrapper.querySelector?.('[data-automation-id="promptOption"]') || headerWrapper;
-      const str =
-        promptOption.getAttribute?.("data-automation-label") ||
-        promptOption.getAttribute?.("title") ||
-        promptOption.getAttribute?.("aria-label") ||
-        promptOption.textContent ||
-        "";
-
-      const courseInfo = parseCourseInfoFromPromptText(str);
-      if (!courseInfo) return;
-
-      const button = createAverageButton(courseInfo);
-      headerWrapper.parentNode?.insertBefore(button, headerWrapper);
-    };
-
-    const averageButtonSelector = "div.WHPF.WFPF, div.WHMF.WFMF";
-
-    const handleAverageButtonNodes = (node) => {
-      if (!(node instanceof Element)) return;
-      if (node.matches?.(averageButtonSelector)) {
-        ensureAverageButton(node);
-      }
-      const matches = node.querySelectorAll?.(averageButtonSelector) || [];
-      matches.forEach((el) => ensureAverageButton(el));
-    };
-
-    const avgButtonObserver = new MutationObserver((mutations) => {
-      mutations.forEach((mutation) => {
-        if (mutation.type !== "childList" || mutation.addedNodes.length === 0) return;
-        mutation.addedNodes.forEach((node) => handleAverageButtonNodes(node));
-      });
-    });
-
-    avgButtonObserver.observe(document.body, { childList: true, subtree: true });
-
-    window.addEventListener("beforeunload", () => {
-      avgButtonObserver.disconnect();
-    });
+    const cleanupAverageButtons = setupRegistrationAverageButtons();
+    if (typeof cleanupAverageButtons === "function") {
+      debug.log({ id: "boot.averageButtonsReady" }, "Average button observer initialized");
+      window.addEventListener("beforeunload", cleanupAverageButtons, { once: true });
+    }
   }
 
   if (document.readyState === "loading") {

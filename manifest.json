@@ -1,12 +1,12 @@
 {
   "manifest_version": 3,
-  "name": "Workday - Schedule Tool",
-  "version": "1.0",
+  "name": "UBC Workday - Schedule Tool",
+  "version": "2.1.0",
   "description": "A tool to make planning for your semester easier.",
 
   "permissions": ["storage"],
 
-  "host_permissions": ["https://*.myworkday.com/*"],
+  "host_permissions": ["https://*.myworkday.com/*", "https://www.ratemyprofessors.com/*"],
 
   "icons": {
     "16": "icon16.png",
@@ -16,7 +16,8 @@
   },
 
   "action": {
-    "default_title": "Workday - Schedule Tool",
+    "default_title": "UBC Workday - Schedule Tool",
+    "default_popup": "dist/popup.html",
     "default_icon": {
       "16": "icon16.png",
       "32": "icon32.png",

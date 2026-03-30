@@ -1,6 +1,7 @@
-import { debugFor } from "../../utilities/debugTool";
+import { debugFor, debugLog } from "../../utilities/debugTool";
 
 const debug = debugFor("sectionLinkInfo");
+debugLog({ local: { sectionLinkInfo: false } });
 
 // Parses a section link string into structured fields. Input: string. Output: object or null.
 export function parseSectionLinkString(input) {

@@ -27,7 +27,7 @@
   border: 1px solid;
   border-radius: 12px;
 
-  overflow: hidden;
+  overflow: visible;
 
   transition: all 0.3s ease-in-out;
 

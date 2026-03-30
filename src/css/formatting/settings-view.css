@@ -2,34 +2,184 @@
 /* SETTINGS VIEW (scoped to settings panel only)                               */
 /* -------------------------------------------------------------------------- */
 
-.widget-panel[data-panel="settings"] .settings-panel {
-  padding: 10px 30px;
+.widget-panel[data-panel="settings-panel"] .settings-panel {
+  padding: 0px 8px;
 }
 
-.widget-panel[data-panel="settings"] .settings-panel h2 {
+.widget-panel[data-panel="settings-panel"] .settings-panel h2 {
   margin: 0 0 6px 0;
   font-size: 18px;
   font-weight: 800;
 }
 
-.widget-panel[data-panel="settings"] .settings-panel p {
+.widget-panel[data-panel="settings-panel"] .settings-panel p {
   margin: 0 0 14px 0;
   font-size: 13px;
   line-height: 1.45;
 }
 
-.widget-panel[data-panel="settings"] .settings-box {
+.widget-panel[data-panel="settings-panel"] .settings-box {
   display: flex;
   gap: 6px;
   align-items: center;
   flex-wrap: wrap;
 }
 
-.widget-panel[data-panel="settings"] .settings-field {
+.widget-panel[data-panel="settings-panel"] .settings-box--stack {
+  flex-direction: column;
+  align-items: stretch;
+  gap: 10px;
+}
+
+.widget-panel[data-panel="settings-panel"] .settings-section {
+  margin-bottom: 15px;
+}
+
+.widget-panel[data-panel="settings-panel"] .settings-section h3 {
+  margin: 0 0 6px 0;
+  font-size: 14px;
+  font-weight: 700;
+}
+
+.widget-panel[data-panel="settings-panel"] .settings-section p {
+  margin: 0 0 10px 0;
+  font-size: 12px;
+  line-height: 1.35;
+}
+
+.settings-field--github-link {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.settings-section--team {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.team-links {
+  display: flex;
+  flex-direction: row;
+  gap: 8px;
+}
+
+.widget-panel[data-panel="settings-panel"] .course-color-grid {
+  display: grid;
+  gap: 8px;
+  margin-bottom: 10px;
+}
+
+.widget-panel[data-panel="settings-panel"] .course-color-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.widget-panel[data-panel="settings-panel"] .course-color-label {
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.widget-panel[data-panel="settings-panel"] .course-color-control {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.widget-panel[data-panel="settings-panel"] .course-color-select {
+  min-width: 100px;
+  padding: 6px;
+  border-radius: 8px;
+  border: 1px solid transparent;
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.widget-panel[data-panel="settings-panel"] .course-color-swatch {
+  width: 24px;
+  height: 24px;
+  border-radius: 7px;
+  border: 2px solid transparent;
+}
+
+.widget-panel[data-panel="settings-panel"] .course-color-reset {
+  align-self: flex-start;
+  padding: 6px 12px;
+  font-size: 12px;
+}
+
+.widget-panel[data-panel="settings-panel"] .settings-tooltip-toggle {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  width: 200px;
+  padding: 10px 12px;
+  border: 1px solid;
+  border-radius: 10px;
+  cursor: pointer;
+  transition: all 0.12s ease;
+}
+
+.widget-panel[data-panel="settings-panel"] .settings-toggle__label {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.widget-panel[data-panel="settings-panel"] .settings-toggle__title {
+  font-size: 13px;
+  font-weight: 700;
+}
+
+.widget-panel[data-panel="settings-panel"] .settings-toggle__hint {
+  font-size: 11px;
+  line-height: 1.2;
+}
+
+.widget-panel[data-panel="settings-panel"] .settings-toggle__input {
+  position: absolute;
+  opacity: 0;
+  pointer-events: none;
+}
+
+.widget-panel[data-panel="settings-panel"] .settings-toggle__slider {
+  position: relative;
+  width: 38px;
+  height: 20px;
+  border-radius: 999px;
+  flex: 0 0 auto;
+  transition: background 0.12s ease;
+}
+
+.widget-panel[data-panel="settings-panel"] .settings-toggle__slider::after {
+  content: "";
+  position: absolute;
+  top: 2px;
+  left: 2px;
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  transition: transform 0.12s ease;
+}
+
+.widget-panel[data-panel="settings-panel"] .settings-toggle__input:checked + .settings-toggle__slider::after {
+  transform: translateX(18px);
+}
+
+.widget-panel[data-panel="settings-panel"] .settings-toggle__input:focus-visible + .settings-toggle__slider {
+  outline: 2px solid;
+  outline-offset: 2px;
+}
+
+.widget-panel[data-panel="settings-panel"] .settings-field {
   display: block;
 }
 
-.widget-panel[data-panel="settings"] .settings-field .link {
+.widget-panel[data-panel="settings-panel"] .settings-field .link {
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -48,7 +198,7 @@
   transition: all 0.12s ease;
 }
 
-.widget-panel[data-panel="settings"] .settings-field .link .material-symbols-rounded {
+.widget-panel[data-panel="settings-panel"] .settings-field .link .material-symbols-rounded {
   font-size: 18px;
   line-height: 1;
   opacity: 0.85;
@@ -58,18 +208,17 @@
     opacity 0.12s ease;
 }
 
-.widget-panel[data-panel="settings"] .settings-field .link:hover {
+.widget-panel[data-panel="settings-panel"] .settings-field .link:hover {
   box-shadow: 0 6px 18px rgba(0, 0, 0, 0.08);
   transform: translateY(-1px);
 }
 
-.widget-panel[data-panel="settings"] .settings-field .link:hover .material-symbols-rounded {
+.widget-panel[data-panel="settings-panel"] .settings-field .link:hover .material-symbols-rounded {
   transform: translateX(2px);
   opacity: 1;
 }
 
-.widget-panel[data-panel="settings"] .settings-field .link:focus-visible {
+.widget-panel[data-panel="settings-panel"] .settings-field .link:focus-visible {
   outline: 2px solid;
   outline-offset: 2px;
 }
-

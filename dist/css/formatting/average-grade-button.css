@@ -1,5 +1,5 @@
-.wd-average-grade-button {
-  margin-right: 10px;
+.registration__avg-button {
+  margin: 10px;
   padding: 4px 8px;
   font-size: 12px;
   font-weight: 500;
@@ -9,7 +9,7 @@
   border: none;
   outline: none;
   cursor: pointer;
-  transition: all .2s ease-in;
+  transition: all .1s ease-in;
 
   width: 110px;
   height: 40px;
@@ -29,7 +29,12 @@
     Arial;
 }
 
-.wd-average-grade-button[disabled] {
+.registration__avg-button[disabled] {
   cursor: default;
+}
+
+.registration__avg-button--static {
+  cursor: default;
+  pointer-events: none;
 }
 

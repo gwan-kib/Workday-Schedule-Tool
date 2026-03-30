@@ -2,8 +2,7 @@ import { debugFor, debugLog } from "../utilities/debugTool.js";
 import { parseSectionLinkString } from "../extraction/parsers/sectionLinkInfo.js";
 
 const debug = debugFor("gradesApiCall");
-debugLog({ local: { gradesApiCall: true } });
-
+debugLog({ local: { gradesApiCall: false } });
 const API_BASE = "https://ubcgrades.com/api";
 const DEFAULT_API_VERSION = "v3";
 

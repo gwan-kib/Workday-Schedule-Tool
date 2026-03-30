@@ -1,0 +1,61 @@
+/* -------------------------------------------------------------------------- */
+/* SAVED SCHEDULES DROPDOWN                                                    */
+/* -------------------------------------------------------------------------- */
+
+.schedule-saved-summary {
+  background: var(--hex-brand-main-3);
+  color: var(--hex-brand-accent-2);
+  opacity: 0.5;
+
+  transition: all 0.2s ease;
+}
+
+.schedule-saved-summary:hover {
+  opacity: 0.75;
+}
+
+.schedule-saved-menu {
+  background: var(--hex-brand-accent-2);
+  border-color: var(--hex-brand-main-2);
+  box-shadow: 0 12px 24px rgba(var(--hex-brand-main-1), 0.2);
+}
+
+.schedule-saved-card {
+  background: var(--hex-brand-accent-4);
+  color: var(--hex-brand-main-1);
+}
+
+.schedule-saved-card:hover,
+.schedule-saved-card:focus-visible {
+  border-color: var(--hex-brand-main-3);
+  border-style: dashed;
+}
+
+.schedule-saved-card.is-active {
+  border-color: var(--hex-brand-main-2);
+  border-style: solid;
+}
+
+.schedule-saved-badge {
+  background: var(--hex-brand-main-2);
+  color: var(--hex-brand-accent-1);
+}
+
+.schedule-saved-action {
+  background: var(--hex-brand-main-3);
+  color: var(--hex-brand-accent-2);
+}
+
+.schedule-saved-action.star.is-favorite {
+  background: var(--hex-brand-main-2);
+  color: var(--hex-brand-accent-1);
+}
+
+.schedule-saved-action.delete {
+  background: var(--hex-danger-1);
+}
+
+.schedule-saved-empty {
+  background: var(--hex-brand-accent-4);
+  color: var(--hex-brand-main-1);
+}

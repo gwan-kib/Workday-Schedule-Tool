@@ -5,13 +5,17 @@ export const STATE = {
 
   savedSchedules: [],
 
+  currentSavedScheduleId: null,
+
   currentScheduleName: null,
 
   sort: { key: null, dir: 1 },
 
   view: {
-    panel: "list",
-    lastMainPanel: "list",
-    semester: "first",
+    panel: "course-list-panel",
+    lastMainPanel: "course-list-panel",
+    semester: null,
+    timeFormat: "am/pm",
+    hoverTipsEnabled: true,
   },
 };

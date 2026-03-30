@@ -1,7 +1,8 @@
 import { STATE } from "../core/state.js";
-import { debugFor } from "../utilities/debugTool.js";
+import { debugFor, debugLog } from "../utilities/debugTool.js";
 
 const debug = debugFor("export-ics");
+debugLog({ local: { "export-ics": false } });
 
 const getLocalTimeZone = () => {
   try {

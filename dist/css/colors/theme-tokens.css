@@ -16,9 +16,11 @@
   --hex-neutral-1: #ffffff;
   --hex-neutral-2: #e5e7eb;
   --hex-neutral-3: #000000;
-  --hex-danger-1: #b91c1c;
+  --hex-danger-1: #e56b6b;
 
   /* Shared course palette (used by course list + schedule view) */
+
+  /* Red */
   --course-color-1-bg: #ffc2b5;
   --course-color-1-border: #e1745c;
   --course-color-1-chip: #ffe3dd;
@@ -26,6 +28,7 @@
   --course-color-1-sub-bg: var(--course-color-1-chip);
   --course-color-1-sub-chip: var(--course-color-1-bg);
 
+  /* Orange */
   --course-color-2-bg: #ffd2a0;
   --course-color-2-border: #db9140;
   --course-color-2-chip: #ffe5c8;
@@ -33,6 +36,7 @@
   --course-color-2-sub-bg: var(--course-color-2-chip);
   --course-color-2-sub-chip: var(--course-color-2-bg);
 
+  /* Purple */
   --course-color-3-bg: #dfc4ff;
   --course-color-3-border: #8839e3;
   --course-color-3-chip: #ede0ff;
@@ -40,6 +44,7 @@
   --course-color-3-sub-bg: var(--course-color-3-chip);
   --course-color-3-sub-chip: var(--course-color-3-bg);
 
+  /* Blue */
   --course-color-4-bg: #b9d6ff;
   --course-color-4-border: #4887e1;
   --course-color-4-chip: #ddebff;
@@ -47,6 +52,7 @@
   --course-color-4-sub-bg: var(--course-color-4-chip);
   --course-color-4-sub-chip: var(--course-color-4-bg);
 
+  /* Yellow */
   --course-color-5-bg: #fff5ae;
   --course-color-5-border: #ecd125;
   --course-color-5-chip: #fffbdf;
@@ -54,6 +60,7 @@
   --course-color-5-sub-bg: var(--course-color-5-chip);
   --course-color-5-sub-chip: var(--course-color-5-bg);
 
+  /* Green */
   --course-color-6-bg: #c9efa7;
   --course-color-6-border: #69d00a;
   --course-color-6-chip: #e3ffca;
@@ -61,6 +68,7 @@
   --course-color-6-sub-bg: var(--course-color-6-chip);
   --course-color-6-sub-chip: var(--course-color-6-bg);
 
+  /* Teal */
   --course-color-7-bg: #c6ffe8;
   --course-color-7-border: #1bdfd3;
   --course-color-7-chip: #e7fff5;

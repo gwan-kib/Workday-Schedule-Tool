@@ -1,4 +1,4 @@
-/* -------------------------------------------------------------------------- */
+﻿/* -------------------------------------------------------------------------- */
 /* FORMATTING (layout / structure only)                                       */
 /* -------------------------------------------------------------------------- */
 
@@ -6,10 +6,12 @@
 @import "./formatting/widget-header-tabs.css";
 @import "./formatting/course-list-view.css";
 @import "./formatting/schedule-view.css";
+@import "./formatting/saved-schedules.css";
 @import "./formatting/settings-view.css";
 @import "./formatting/help-view.css";
 @import "./formatting/widget-footer.css";
 @import "./formatting/floating-button.css";
+@import "./formatting/hover-tooltip.css";
 
 /* -------------------------------------------------------------------------- */
 /* COLORS (theme / palette only)                                               */
@@ -20,8 +22,11 @@
 @import "./colors/widget-header-tabs-color.css";
 @import "./colors/course-list-colors.css";
 @import "./colors/schedule-view-colors.css";
+@import "./colors/saved-schedules-colors.css";
 @import "./colors/settings-view-colors.css";
 @import "./colors/help-view-colors.css";
 @import "./colors/widget-footer-colors.css";
 @import "./colors/floating-button-colors.css";
+@import "./colors/hover-tooltip-colors.css";
 @import "./colors/settings-colors.css";
+

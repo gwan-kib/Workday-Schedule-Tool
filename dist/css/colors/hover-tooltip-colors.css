@@ -1,0 +1,12 @@
+﻿:root,
+:host {
+  --wd-hover-tooltip-bg: rgba(24, 24, 24, 0.94);
+  --wd-hover-tooltip-text: #ffffff;
+  --wd-hover-tooltip-shadow: 0 8px 18px rgba(0, 0, 0, 0.22);
+}
+
+.wd-hover-tooltip::after {
+  background: var(--wd-hover-tooltip-bg);
+  color: var(--wd-hover-tooltip-text);
+  box-shadow: var(--wd-hover-tooltip-shadow);
+}

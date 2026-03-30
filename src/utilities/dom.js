@@ -1,5 +1,6 @@
-import { debugFor } from "./debugTool.js";
+import { debugFor, debugLog } from "./debugTool.js";
 const debug = debugFor("dom");
+debugLog({ local: { dom: false } });
 
 // Returns all matching elements within root. Input: root Element/Document, selector string. Output: array of Elements.
 export const $$ = (root, sel) => {

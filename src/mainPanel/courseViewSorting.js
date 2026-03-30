@@ -1,9 +1,11 @@
 import { $$, on } from "../utilities/dom.js";
 import { STATE } from "../core/state.js";
-import { renderCourseRows } from "./renderCourseRows.js";
-import { debugFor } from "../utilities/debugTool.js";
+import { reorderCourseObjects } from "./renderCourseObjects.js";
+import { debugFor, debugLog } from "../utilities/debugTool.js";
 
 const debug = debugFor("mainPanelInteractions");
+debugLog({ local: { mainPanelInteractions: false } });
+const SORTABLE_KEYS = new Set(["title", "meeting", "instructionalFormat"]);
 
 // Filters courses into STATE.filtered by query. Input: query string. Output: none.
 export function filterCourses(query) {
@@ -14,20 +16,20 @@ export function filterCourses(query) {
     return;
   }
 
-  const keys = ["code", "title", "section_number", "instructor", "meeting", "instructionalFormat"];
+  const keys = [ "title", "meeting", "instructionalFormat", "code", "instructor" ];
 
   STATE.filtered = STATE.courses.filter((c) =>
     keys.some((k) =>
       String(c?.[k] || "")
         .toLowerCase()
-        .includes(q)
-    )
+        .includes(q),
+    ),
   );
 }
 
 // Sorts STATE.filtered by a key and updates STATE.sort. Input: key string. Output: none.
 export function sortCourses(key) {
-  if (!key) return;
+  if (!key || !SORTABLE_KEYS.has(key)) return;
 
   const dir = STATE.sort.key === key ? -STATE.sort.dir : 1;
   STATE.sort = { key, dir };
@@ -50,7 +52,7 @@ export function wireTableSorting(ui) {
         // Third click: clear sorting and restore filtered order.
         STATE.sort = { key: null, dir: 1 };
         filterCourses(ui.searchInput?.value || "");
-        renderCourseRows(ui, STATE.filtered);
+        reorderCourseObjects(ui, STATE.filtered);
 
         headCells.forEach((h) => h.classList.remove("sorted-asc", "sorted-desc"));
         debug.log({ id: "wireTableSorting.click" }, "Cleared sort via list controls", { key });
@@ -58,7 +60,7 @@ export function wireTableSorting(ui) {
       }
 
       sortCourses(key);
-      renderCourseRows(ui, STATE.filtered);
+      reorderCourseObjects(ui, STATE.filtered);
 
       headCells.forEach((h) => h.classList.remove("sorted-asc", "sorted-desc"));
       th.classList.add(STATE.sort.dir === 1 ? "sorted-asc" : "sorted-desc");

@@ -1,7 +1,8 @@
 import { $$ } from "../utilities/dom";
-import { debugFor } from "../utilities/debugTool.js";
+import { debugFor, debugLog } from "../utilities/debugTool.js";
 
 const debug = debugFor("grid");
+debugLog({ local: { grid: false } });
 
 // Normalizes text for matching. Input: string. Output: normalized lowercased string.
 export const normalizeText = (s) =>
@@ -84,11 +85,7 @@ export function buildHeaderMaps(gridRoot) {
   return { colMap, posMap };
 }
 
-// Finds the Workday grid root and rows. Input: none. Output: { root, rows } or null.
-export function findWorkdayGrid() {
-  const roots = $$(
-    document,
-    `
+const GRID_ROOT_SELECTOR = `
   table,
   [role="table"],
   [role="grid"],
@@ -97,44 +94,80 @@ export function findWorkdayGrid() {
   div[data-automation-id="gridContainer"],
   div[data-automation-id="responsiveDataTable"],
   div[data-automation-id="tableContainer"]
-`,
-  );
+`;
 
-  debug.log({ id: "findWorkdayGrid.roots" }, "Candidate roots found:", roots);
-
-  for (const root of roots) {
-    const headerEls = $$(
-      root,
-      `
+const GRID_HEADER_SELECTOR = `
   thead th,
   [role="columnheader"],
   div[data-automation-id*="columnHeader"],
   .wd-GridHeaderCell,
   .grid-column-header
-`,
-    );
+`;
 
-    const headerText = headerEls.map((h) => normalizeText(getHeaderText(h)));
+const GRID_ROW_SELECTOR = "tbody tr, [role='rowgroup'] [role='row'], .wd-GridRow, .grid-row";
 
-    const looksRight =
-      headerText.some((t) => t.includes("section")) &&
-      (headerText.some((t) => t.includes("instructor")) ||
-        headerText.some((t) => t.includes("meeting")) ||
-        headerText.some((t) => t.includes("instructional format")) ||
-        headerText.some((t) => t.includes("format")) ||
-        headerText.some((t) => t.includes("status")));
+function sameRows(leftRows, rightRows) {
+  if (leftRows.length !== rightRows.length) return false;
+  return leftRows.every((row, index) => row === rightRows[index]);
+}
 
-    debug.log({ id: "findWorkdayGrid.scanRoot" }, "Scanning root:", { headerEls, looksRight, headerText });
+function getCandidateRoots() {
+  const uniqueRoots = [];
 
-    if (!looksRight) continue;
-
-    const rows = $$(root, "tbody tr, [role='rowgroup'] [role='row'], .wd-GridRow, .grid-row");
-
-    debug.log({ id: "findWorkdayGrid.rows" }, "Rows found for matching root:", rows);
-
-    if (rows.length) return { root, rows };
+  for (const root of $$(document, GRID_ROOT_SELECTOR)) {
+    if (!(root instanceof Element)) continue;
+    if (uniqueRoots.includes(root)) continue;
+    uniqueRoots.push(root);
   }
 
-  debug.log({ id: "findWorkdayGrid.none" }, "No matching table/grid found");
-  return null;
+  return uniqueRoots;
+}
+
+function scanRoot(root) {
+  const headerEls = $$(root, GRID_HEADER_SELECTOR);
+  const headerText = headerEls.map((h) => normalizeText(getHeaderText(h)));
+
+  const looksRight =
+    headerText.some((t) => t.includes("section")) &&
+    (headerText.some((t) => t.includes("instructor")) ||
+      headerText.some((t) => t.includes("meeting")) ||
+      headerText.some((t) => t.includes("instructional format")) ||
+      headerText.some((t) => t.includes("format")) ||
+      headerText.some((t) => t.includes("status")));
+
+  debug.log({ id: "findWorkdayGrid.scanRoot" }, "Scanning root:", { headerEls, looksRight, headerText });
+
+  if (!looksRight) return null;
+
+  const rows = $$(root, GRID_ROW_SELECTOR);
+
+  debug.log({ id: "findWorkdayGrid.rows" }, "Rows found for matching root:", rows);
+
+  if (!rows.length) return null;
+
+  return { root, rows };
+}
+
+// Finds all Workday grid roots and rows that look like schedules. Input: none. Output: array of { root, rows }.
+export function findWorkdayGrids() {
+  const roots = getCandidateRoots();
+  const matches = [];
+
+  debug.log({ id: "findWorkdayGrid.roots" }, "Candidate roots found:", roots);
+
+  for (const root of roots) {
+    const match = scanRoot(root);
+    if (!match) continue;
+    if (matches.some((existing) => sameRows(existing.rows, match.rows))) continue;
+    matches.push(match);
+  }
+
+  if (!matches.length) debug.log({ id: "findWorkdayGrid.none" }, "No matching table/grid found");
+
+  return matches;
+}
+
+// Finds the first Workday grid root and rows. Input: none. Output: { root, rows } or null.
+export function findWorkdayGrid() {
+  return findWorkdayGrids()[0] || null;
 }

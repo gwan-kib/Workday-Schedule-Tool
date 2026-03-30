@@ -2,34 +2,34 @@
 /* HELP VIEW (scoped to help panel only)                                       */
 /* -------------------------------------------------------------------------- */
 
-.widget-panel[data-panel="help"] .help-panel {
-  padding: 10px 30px;
+.widget-panel[data-panel="help-panel"] .help-panel {
+  padding: 0px 8px;
 }
 
-.widget-panel[data-panel="help"] .help-panel h2 {
+.widget-panel[data-panel="help-panel"] .help-panel h2 {
   margin: 0 0 6px 0;
   font-size: 18px;
   font-weight: 800;
 }
 
-.widget-panel[data-panel="help"] .help-panel p {
+.widget-panel[data-panel="help-panel"] .help-panel p {
   margin: 14px 0 14px 0;
   font-size: 13px;
   line-height: 1.45;
 }
 
-.widget-panel[data-panel="help"] .help-box {
+.widget-panel[data-panel="help-panel"] .help-box {
   display: flex;
   gap: 6px;
   align-items: center;
   flex-wrap: wrap;
 }
 
-.widget-panel[data-panel="help"] .settings-field {
+.widget-panel[data-panel="help-panel"] .settings-field {
   display: block;
 }
 
-.widget-panel[data-panel="help"] .settings-field .link {
+.widget-panel[data-panel="help-panel"] .settings-field .link {
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -51,7 +51,7 @@
   transition: all 0.12s ease;
 }
 
-.widget-panel[data-panel="help"] .settings-field .link .material-symbols-rounded {
+.widget-panel[data-panel="help-panel"] .settings-field .link .material-symbols-rounded {
   margin-left: 6px;
   font-size: 18px;
   line-height: 1;
@@ -62,19 +62,18 @@
     opacity 0.12s ease;
 }
 
-.widget-panel[data-panel="help"] .settings-field .link:hover {
+.widget-panel[data-panel="help-panel"] .settings-field .link:hover {
   background-color: var(--hex-brand-accent-2);
   box-shadow: 0 6px 18px rgba(0, 0, 0, 0.08);
   transform: translateY(-1px);
 }
 
-.widget-panel[data-panel="help"] .settings-field .link:hover .material-symbols-rounded {
+.widget-panel[data-panel="help-panel"] .settings-field .link:hover .material-symbols-rounded {
   transform: translateX(2px);
   opacity: 1;
 }
 
-.widget-panel[data-panel="help"] .settings-field .link:focus-visible {
+.widget-panel[data-panel="help-panel"] .settings-field .link:focus-visible {
   outline: 2px solid var(--hex-brand-main-3);
   outline-offset: 2px;
 }
-

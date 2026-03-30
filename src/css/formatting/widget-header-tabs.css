@@ -8,6 +8,9 @@
 
   padding: 10px 12px;
   gap: 6px;
+
+  border-top-left-radius: inherit;
+  border-top-right-radius: inherit;
 }
 
 #widget-title {
@@ -34,7 +37,7 @@
 
   opacity: 0.6;
 
-  transition: all 0.3s ease;
+  transition: all 0.2s ease;
 }
 
 /* Header buttons sizing/align */
@@ -217,12 +220,8 @@
   border: 1px solid var(--hex-neutral-4);
   border-radius: 999px;
 
-  font-size: 12px;
+  font-size: 13px;
   font-weight: 600;
-
-  transition:
-    box-shadow 150ms ease,
-    background-color 150ms ease;
 }
 
 /* Refresh button */
@@ -234,7 +233,7 @@
   width: 36px;
 }
 
-#widget-refresh.rotate {
+#widget-refresh.rotate .refresh-icon {
   animation: spin360 0.4s ease-in-out;
 }
 
@@ -254,112 +253,3 @@
   height: 36px;
   width: 36px;
 }
-
-/* -------------------------------------------------------------------------- */
-/* SCHEDULE SAVED DROPDOWN (lives in tabs row)                                 */
-/* -------------------------------------------------------------------------- */
-
-.schedule-saved-dropdown {
-  position: relative;
-  margin-left: auto;
-}
-
-.schedule-saved-summary {
-  display: inline-flex;
-  align-items: center;
-  padding: 0px 10px;
-  height: 28px;
-
-  border-radius: 999px;
-  border: none;
-
-  justify-content: center;
-  text-align: center;
-
-  font-size: 14px;
-  font-weight: 700;
-
-  cursor: pointer;
-  list-style: none;
-}
-
-.schedule-saved-summary::-webkit-details-marker {
-  display: none;
-}
-
-.schedule-saved-summary .text {
-  text-align: center;
-}
-
-.schedule-saved-menu {
-  position: absolute;
-  right: 0;
-  top: calc(100% + 8px);
-
-  min-width: 240px;
-  max-width: 320px;
-
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-
-  padding: 7px;
-  border-radius: 12px;
-  border: 2px;
-
-  z-index: 100;
-}
-
-.schedule-saved-card {
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-
-  padding: 10px;
-  border-radius: 10px;
-}
-
-.schedule-saved-card-header {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 8px;
-}
-
-.schedule-saved-title {
-  font-size: 14px;
-  font-weight: 700;
-}
-
-.schedule-saved-meta {
-  font-size: 12px;
-  opacity: 0.8;
-}
-
-.schedule-saved-actions {
-  display: flex;
-  gap: 8px;
-}
-
-.schedule-saved-action {
-  padding: 4px 8px;
-  border-radius: 999px;
-  border: none;
-
-  font-size: 12px;
-  font-weight: 600;
-
-  cursor: pointer;
-}
-
-.schedule-saved-empty {
-  font-size: 12px;
-  font-weight: 600;
-
-  padding: 8px;
-  border-radius: 10px;
-
-  text-align: center;
-  opacity: 0.7;
-}
-

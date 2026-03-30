@@ -1,6 +1,7 @@
-import { debugFor } from "../utilities/debugTool.js";
+import { debugFor, debugLog } from "../utilities/debugTool.js";
 
 const debug = debugFor("loadMainPanel");
+debugLog({ local: { loadMainPanel: false } });
 
 // Loads panel HTML and CSS into the shadow root and returns UI references. Input: ShadowRoot. Output: ui object.
 export async function loadMainPanel(shadowRoot) {
@@ -11,20 +12,24 @@ export async function loadMainPanel(shadowRoot) {
     "formatting/widget-header-tabs.css",
     "formatting/course-list-view.css",
     "formatting/schedule-view.css",
+    "formatting/saved-schedules.css",
     "formatting/settings-view.css",
     "formatting/help-view.css",
     "formatting/widget-footer.css",
     "formatting/floating-button.css",
+    "formatting/hover-tooltip.css",
 
     "colors/theme-tokens.css",
     "colors/widget-base-colors.css",
     "colors/widget-header-tabs-color.css",
     "colors/course-list-colors.css",
     "colors/schedule-view-colors.css",
+    "colors/saved-schedules-colors.css",
     "colors/settings-view-colors.css",
     "colors/help-view-colors.css",
     "colors/widget-footer-colors.css",
     "colors/floating-button-colors.css",
+    "colors/hover-tooltip-colors.css",
     "colors/settings-colors.css",
   ];
 
@@ -75,8 +80,8 @@ export async function loadMainPanel(shadowRoot) {
     views: shadowRoot.querySelectorAll(".widget-panel"),
 
     scheduleGrid: shadowRoot.querySelector("#schedule-grid"),
-    semesterButtons: shadowRoot.querySelectorAll(".semester-button"),
-
+    scheduleTermPill: shadowRoot.querySelector("#schedule-term-pill"),
+    
     savedDropdown: shadowRoot.querySelector("#schedule-saved-dropdown"),
     savedMenu: shadowRoot.querySelector("#schedule-saved-menu"),
 
@@ -85,16 +90,29 @@ export async function loadMainPanel(shadowRoot) {
     saveModalMessage: shadowRoot.querySelector("#schedule-modal-message"),
     saveModalField: shadowRoot.querySelector("#schedule-modal-field"),
     saveModalInput: shadowRoot.querySelector("#schedule-modal-input"),
-    saveModalCancel: shadowRoot.querySelector(".schedule-modal-cancel"),
-    saveModalConfirm: shadowRoot.querySelector(".schedule-modal-confirm"),
+    saveModalCancel: shadowRoot.querySelector("#schedule-save-modal .schedule-modal-cancel"),
+    saveModalConfirm: shadowRoot.querySelector("#schedule-save-modal .schedule-modal-confirm"),
+
+    schedulePickerModal: shadowRoot.querySelector("#schedule-picker-modal"),
+    schedulePickerTitle: shadowRoot.querySelector("#schedule-picker-title"),
+    schedulePickerMessage: shadowRoot.querySelector("#schedule-picker-message"),
+    schedulePickerList: shadowRoot.querySelector("#schedule-picker-list"),
+    schedulePickerCancel: shadowRoot.querySelector("#schedule-picker-modal .schedule-modal-cancel"),
 
     helpButton: shadowRoot.querySelector(".help"),
     settingsButton: shadowRoot.querySelector(".settings"),
 
     footerAlert: shadowRoot.querySelector("#schedule-conflict-alert"),
+
+    courseColorGrid: shadowRoot.querySelector("#course-color-grid"),
+    courseColorReset: shadowRoot.querySelector("#course-color-reset"),
+
+    hoverTipsToggle: shadowRoot.querySelector("#setting-hover-tips"),
   };
 
   debug.log({ id: "loadMainPanel.ui" }, "Loaded mainPanel UI refs", ui);
 
   return ui;
 }
+
+

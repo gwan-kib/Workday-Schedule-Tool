@@ -1,9 +1,8 @@
-.widget-panel[data-panel="help"] .settings-panel {
+.widget-panel[data-panel="help-panel"] .settings-panel {
   color: var(--hex-brand-main-1);
 }
 
-.widget-panel[data-panel="help"] .help-item {
+.widget-panel[data-panel="help-panel"] .help-item {
   background: var(--hex-neutral-1);
   border-color: var(--hex-neutral-4);
 }
-

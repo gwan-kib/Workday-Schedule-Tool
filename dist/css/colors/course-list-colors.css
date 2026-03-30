@@ -42,6 +42,10 @@
   border-color: var(--course-card-border, var(--hex-brand-accent-4));
 }
 
+.course-code-conflict {
+  color: var(--hex-danger-1);
+}
+
 .course-pill {
   color: var(--hex-neutral-3);
   background: var(--course-card-chip-bg, var(--hex-brand-accent-3));
@@ -66,6 +70,17 @@
 
 .course-card__detail .material-symbols-rounded {
   color: var(--hex-neutral-3);
+}
+
+.course-card__rmp-button,
+.course-card__avg-button {
+  background: var(--course-card-bg);
+  border-color: var(--course-card-border);
+}
+
+.course-card__rmp-button:hover:not([disabled]),
+.course-card__avg-button:hover:not([disabled]) {
+  background: var(--course-card-chip-bg);
 }
 
 /* Course card color cycle (7) with 1 sub palette (card, chip) */
@@ -136,10 +151,4 @@
 .course-card--sub {
   --course-card-bg: var(--course-card-sub-bg);
   --course-card-chip-bg: var(--course-card-sub-chip-bg);
-}
-
-.instructor-popup-content {
-  color: var(--hex-brand-accent-5);
-  background: var(--hex-brand-main-1);
-  border: 1px solid var(--hex-brand-main-2);
 }

@@ -1,10 +1,26 @@
-import { debugFor } from "../../utilities/debugTool.js";
+import { debugFor, debugLog } from "../../utilities/debugTool.js";
 
 const debug = debugFor("meetingPatternsInfo");
+debugLog({ local: { meetingPatternsInfo: false } });
 
 const DATE_RE = /\b\d{4}-\d{2}-\d{2}\s*-\s*\d{4}-\d{2}-\d{2}\b/;
 const TIME_RE = /\b\d{1,2}:\d{2}\s*[ap]\.?m\.?\b/i;
 const DAY_RE = /\b(Mon|Tue|Wed|Thu|Fri|Sat|Sun)\b/i;
+
+function formatDayPart(dayPartRaw) {
+  const tokens = String(dayPartRaw || "").match(/\([^)]*\)|\S+/g) || [];
+
+  return tokens
+    .map((token) => {
+      const trimmed = token.trim();
+      return /^\(\s*alternate\s+weeks\s*\)$/i.test(trimmed) ? "(Alternate Weeks)" : trimmed;
+    })
+    .filter(Boolean)
+    .reduce((formatted, token) => {
+      if (!formatted) return token;
+      return token.startsWith("(") ? `${formatted} ${token}` : `${formatted} / ${token}`;
+    }, "");
+}
 
 // Extracts meeting lines from a container element. Input: element. Output: array of strings.
 export function extractMeetingLines(containerEl) {
@@ -60,7 +76,7 @@ export function formatMeetingLineForPanel(line) {
     .filter(Boolean);
 
   const dayPartRaw = parts.find((p) => /\b(Mon|Tue|Wed|Thu|Fri|Sat|Sun)\b/.test(p)) || "";
-  const dayPart = dayPartRaw.split(/\s+/).join(" / ");
+  const dayPart = formatDayPart(dayPartRaw);
 
   const timePart = parts.find((p) => /\d{1,2}:\d{2}/.test(p) && /-/.test(p)) || "";
 

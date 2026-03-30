@@ -31,6 +31,15 @@
   background: transparent;
 }
 
+.schedule-time-toggle {
+  background: var(--hex-brand-accent-5);
+  color: var(--hex-brand-main-1);
+}
+
+.schedule-time-toggle:hover {
+  background: var(--hex-brand-accent-4);
+}
+
 .schedule-entry-float {
   background: var(--schedule-entry-bg, var(--hex-brand-accent-5));
   color: var(--hex-neutral-3);
@@ -100,54 +109,12 @@
   --schedule-entry-border: var(--schedule-entry-sub-border);
 }
 
-/* semester buttons */
-.semester-button {
-  background: var(--hex-brand-accent-4);
-  color: var(--hex-brand-main-1);
-}
-
-.semester-button.is-active {
-  background: var(--hex-brand-accent-6);
-  color: var(--hex-brand-accent-2);
-}
-
-/* saved schedules */
-.schedule-saved-summary {
-  background: var(--hex-brand-main-3);
-  color: var(--hex-brand-accent-2);
-  opacity: 0.5;
-
-  transition: all 0.2s ease;
-}
-
-.schedule-saved-summary:hover {
-  opacity: 0.75;
-}
-
-.schedule-saved-menu {
-  background: var(--hex-brand-accent-2);
-  border-color: var(--hex-brand-main-2);
-  box-shadow: 0 12px 24px rgba(var(--hex-brand-main-1), 0.2);
-}
-
-.schedule-saved-card {
-  background: var(--hex-brand-accent-4);
-  color: var(--hex-brand-main-1);
-}
-
-.schedule-saved-action {
+/* schedule term pill */
+.schedule-term-pill {
   background: var(--hex-brand-main-2);
-  color: var(--hex-brand-accent-2);
+  color: var(--hex-brand-accent-1);
 }
 
-.schedule-saved-action.delete {
-  background: var(--hex-danger-1);
-}
-
-.schedule-saved-empty {
-  background: var(--hex-brand-accent-4);
-  color: var(--hex-brand-main-1);
-}
 
 /* modal colors (moved here from widget-functionality-colors.css) */
 .schedule-modal-backdrop {
@@ -171,6 +138,28 @@
   color: var(--hex-brand-main-1);
 }
 
+.schedule-modal-cancel {
+  background: var(--hex-danger-1);
+  color: var(--hex-brand-accent-2);
+}
+
+.schedule-modal-cancel:hover,
+.schedule-modal-cancel:focus-visible,
+.schedule-modal-cancel:active {
+  background: var(--hex-danger-1);
+}
+
+.schedule-modal-confirm {
+  background: var(--hex-brand-main-1);
+  color: var(--hex-brand-accent-2);
+}
+
+.schedule-modal-confirm:hover,
+.schedule-modal-confirm:focus-visible,
+.schedule-modal-confirm:active {
+  background: var(--hex-brand-main-1);
+}
+
 .schedule-modal-input {
   background: var(--hex-brand-accent-4);
   color: var(--hex-brand-main-1);
@@ -184,5 +173,18 @@
 
 .schedule-modal-input.is-invalid {
   border-color: var(--hex-danger-1);
+}
+
+.schedule-picker-option {
+  background: var(--hex-brand-accent-4);
+  color: var(--hex-brand-main-1);
+  border-color: var(--hex-brand-accent-6);
+}
+
+.schedule-picker-option:hover,
+.schedule-picker-option:focus-visible {
+  background: var(--hex-brand-accent-5);
+  border-color: var(--hex-brand-main-2);
+  outline: none;
 }
 

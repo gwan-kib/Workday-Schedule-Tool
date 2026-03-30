@@ -1,6 +1,7 @@
-import { debugFor } from "../utilities/debugTool.js";
+import { debugFor, debugLog } from "../utilities/debugTool.js";
 
 const debug = debugFor("scheduleCollisions");
+debugLog({ local: { scheduleCollisions: false } });
 
 // Detects overlapping schedule events by day. Input: eventsByDay map. Output: conflict blocks + codes.
 export function detectScheduleConflicts(eventsByDay) {

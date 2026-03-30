@@ -34,7 +34,6 @@
 }
 
 .button:hover {
-  opacity: 0.75;
   background: var(--hex-brand-main-3);
 }
 
@@ -68,9 +67,8 @@
 
 /* search */
 #widget-search {
-  background-color: var(--hex-brand-accent-4);
-  color: var(--hex-brand-main-1);
-  opacity: 0.5;
+  background-color: var(--hex-brand-accent-6);
+  color: var(--hex-brand-accent-4);
 
   border-color: var(--hex-brand-main-2);
 
@@ -79,31 +77,26 @@
 
 #widget-search::placeholder {
   color: var(--hex-brand-main-1);
-  opacity: 0.75;
-}
-
-#widget-search:hover:not(:focus-visible) {
-  box-shadow: 0 0 8px var(--hex-brand-accent-4);
+  opacity: .7;
 }
 
 #widget-search:focus-visible {
-  opacity: 1;
+  background-color: var(--hex-brand-accent-3);
+  color: var(--hex-brand-main-1);
 }
 
 .widget-search-wrap .search-icon {
-  color: var(--hex-brand-main-1);
-  opacity: 0.5;
-  z-index: 10;
+  color: var(--hex-brand-accent-4);
 }
 
 .widget-search-wrap:focus-within .search-icon {
-  opacity: 1;
+  color: var(--hex-brand-accent-6);
 }
 
 /* export dropdown */
 .export-menu {
   background: var(--hex-brand-accent-1);
-  border-color: var(--hex-brand-accent-1);
+  border-color: var(--hex-brand-main-2);
 }
 
 .export-option {
