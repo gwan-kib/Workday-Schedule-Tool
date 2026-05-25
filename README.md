@@ -7,7 +7,7 @@ _Not affiliated with or endorsed by Workday._
 
 <h3 style="margin:0;">Simplify your semester.<br>Visualize your schedule.<br>Export it when you're ready.</h3>
 
-Chrome Extension: https://lnkd.in/gtMCjkjs
+Chrome Extension: [UBC Workday - Schedule Tool](https://chromewebstore.google.com/detail/ldknikpffjjfjnfimhjjdilfbnlnalcj)
 
 </div>
 
@@ -32,11 +32,11 @@ If you use Workday for registration, this helps you:
 4. Open the extension using the button on the rightside of your screen
 5. View your course and schedule layout
 6. Save schedules in the extension
-7. Export to calendar if needed
+7. Export to `.ics` or sign into Google from Settings to sync directly to Google Calendar
 
-Optional: open the extension from the Chrome toolbar popup to preview your saved default schedule outside the Workday page.
+Optional: open the extension from the Chrome toolbar popup to preview your starred/default saved schedule outside the Workday page.
 
-- still stuck? check out https://docs.google.com/document/d/1D0YqHct_d3rR8WtlkHF9Dybqb3mFB7Wka0ZWsFZOda8/edit?tab=t.0
+- still stuck? [Check out the Tutorial Doc](https://docs.google.com/document/d/1D0YqHct_d3rR8WtlkHF9Dybqb3mFB7Wka0ZWsFZOda8/edit?tab=t.0)
 
 ---
 
@@ -68,17 +68,19 @@ All snapshots stay on your device.
 ### Class Averages
 
 - See 5-year class averages right in Workday
-- Pulled straight from ubcgrades.com
+- View averages in the course list and on supported Workday registration cards
+- Open supported results on UBCGrades
 
 ---
 
 ### Professor Ratings
 
 - See Rate My Professors ratings directly in the course list when a supported instructor match is found
+- Open supported ratings directly in RateMyProf
 
 ---
 
-### Calendar Export (.ics)
+### Calendar Export and Google Calendar Sync
 
 Export to a standard `.ics` file that works with:
 
@@ -87,23 +89,19 @@ Export to a standard `.ics` file that works with:
 - Outlook
 - Most calendar apps
 
-Includes recurring class meetings with the correct schedule structure.
+You can also sign into Google from Settings and sync the current schedule directly to Google Calendar. Synced events are refreshed on each sync so old imports from this tool do not pile up.
+
+Both export paths include recurring class meetings with the correct schedule structure.
 
 ---
 
-### Smart Filtering
+### Manual Course Add
 
-Search by:
-
-- Course name
-- Instructor…
-- Week Days and more
-
-Find the classes you need without endless scrolling.
+- Add a course from a Workday course link when it is not already in your loaded schedule
 
 ---
 
-Want to request a feature? Let me know: gwantanak.3@gmail.com
+Want to request a feature? Let me know at gwantanak.3@gmail.com
 
 ---
 
@@ -111,10 +109,12 @@ Want to request a feature? Let me know: gwantanak.3@gmail.com
 
 Your schedule data stays on your device in Chrome storage.
 
-- Works only on `*.myworkday.com`
+- The extension panel runs on `*.myworkday.com`
 - Saved schedule data is stored locally using Chrome storage
+- Google sign-in state is stored locally and is used only for Calendar sync
 - Uses ubcgrades.com for class averages
 - Uses ratemyprofessors.com for professor ratings
+- Uses Google Calendar APIs only when you sign in and sync a schedule
 - No tracking
 - No third-party analytics
 - No data collection for analytics/advertising

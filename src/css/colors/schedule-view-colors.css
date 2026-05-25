@@ -53,7 +53,7 @@
   box-shadow: 0 4px 12px rgba(185, 28, 28, 0.25);
 }
 
-/* Schedule entry color cycle (7) */
+/* Schedule entry color cycle */
 .schedule-entry--color-1 {
   --schedule-entry-bg: var(--course-color-1-bg);
   --schedule-entry-border: var(--course-color-1-border);
@@ -103,6 +103,13 @@
   --schedule-entry-sub-border: var(--course-color-7-border);
 }
 
+.schedule-entry--color-8 {
+  --schedule-entry-bg: var(--course-color-8-bg);
+  --schedule-entry-border: var(--course-color-8-border);
+  --schedule-entry-sub-bg: var(--course-color-8-sub-bg);
+  --schedule-entry-sub-border: var(--course-color-8-border);
+}
+
 /* Sub variants override the base palette */
 .schedule-entry--sub {
   --schedule-entry-bg: var(--schedule-entry-sub-bg);
@@ -119,6 +126,13 @@
 /* modal colors (moved here from widget-functionality-colors.css) */
 .schedule-modal-backdrop {
   background: rgba(64, 29, 129, 0.4);
+}
+
+.schedule-loading-indicator {
+  background: var(--hex-brand-accent-2);
+  color: var(--hex-brand-main-1);
+  border-color: var(--hex-brand-main-1);
+  box-shadow: 0 18px 30px rgba(64, 29, 129, 0.25);
 }
 
 .dialog-container {

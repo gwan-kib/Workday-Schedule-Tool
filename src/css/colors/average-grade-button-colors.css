@@ -1,10 +1,12 @@
-.registration__avg-button {
+.registration__avg-button,
+.registration__course-import-button {
   color: var(--hex-brand-main-1);
   background-color: var(--hex-brand-accent-4);
   box-shadow: 0 0 0 1px var(--hex-brand-main-2);
 }
 
-.registration__avg-button:hover:not([disabled]):not(.registration__avg-button--static) {
+.registration__avg-button:hover:not([disabled]):not(.registration__avg-button--static),
+.registration__course-import-button:hover:not([disabled]) {
   background-color: var(--hex-brand-accent-6);
   box-shadow: 0 0 0 1px var(--hex-brand-main-2);
 }

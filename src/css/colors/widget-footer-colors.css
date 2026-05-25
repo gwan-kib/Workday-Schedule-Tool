@@ -4,7 +4,14 @@
   color: var(--hex-brand-main-1);
 }
 
-.footer-alert {
+.footer-note {
   color: var(--hex-danger-1);
 }
 
+.footer-note[data-tone="info"] {
+  color: var(--hex-info-1);
+}
+
+.footer-note[data-tone="success"] {
+  color: var(--hex-success-1);
+}

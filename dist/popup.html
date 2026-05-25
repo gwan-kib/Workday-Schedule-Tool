@@ -14,12 +14,11 @@
     <main class="popup-shell">
 
       <section class="popup-empty is-hidden" id="popup-empty">
-        <h2>No saved schedules yet</h2>
-        <p>Open Workday, save a schedule there, and it will appear here the next time you click the extension icon.</p>
+        <h2>You have no saved schedules.</h2>
+        <p>When you save a schedule from Workday, it will appear here.</p>
       </section>
 
-      <section class="popup-brand" aria-label="Extension name">
-        <p class="popup-eyebrow">Chrome Extension</p>
+      <section class="popup-brand">
         <h1 class="popup-brand-title">UBC Workday - Schedule Tool</h1>
       </section>
 
@@ -27,7 +26,7 @@
         <div class="popup-picker" id="popup-picker-wrap">
           <span class="popup-picker-label">Saved Schedules:</span>
           <details class="schedule-saved-dropdown popup-saved-dropdown" id="popup-saved-dropdown">
-            <summary class="schedule-saved-summary popup-saved-summary" aria-label="Choose saved schedule">
+            <summary class="schedule-saved-summary popup-saved-summary">
               <span class="text" id="popup-saved-summary-text">Schedules</span>
               <span class="popup-dropdown-caret" aria-hidden="true">&#9662;</span>
             </summary>
@@ -41,7 +40,8 @@
         </div>
 
         <div class="schedule-grid" id="popup-schedule-grid"></div>
-        <div class="popup-alert footer-alert is-hidden" id="popup-footer-alert" aria-live="polite"></div>
+
+        <div class="popup-alert footer-note-stack is-hidden" id="popup-footer-alert" aria-live="polite"></div>
       </section>
     </main>
 

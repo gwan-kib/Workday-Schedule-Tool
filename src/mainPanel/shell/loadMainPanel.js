@@ -1,0 +1,121 @@
+import { debugFor, debugLog } from "../../utilities/debugTool.js";
+
+const debug = debugFor("loadMainPanel");
+debugLog({ local: { loadMainPanel: false } });
+
+// Loads panel HTML and CSS into the shadow root and returns UI references. Input: ShadowRoot. Output: ui object.
+export async function loadMainPanel(shadowRoot) {
+  const htmlUrl = chrome.runtime.getURL("dist/panel.html");
+
+  const cssFiles = [
+    "formatting/widget-base.css",
+    "formatting/widget-header-tabs.css",
+    "formatting/course-list-view.css",
+    "formatting/schedule-view.css",
+    "formatting/saved-schedules.css",
+    "formatting/settings-view.css",
+    "formatting/help-view.css",
+    "formatting/widget-footer.css",
+    "formatting/floating-button.css",
+    "formatting/hover-tooltip.css",
+
+    "colors/theme-tokens.css",
+    "colors/widget-base-colors.css",
+    "colors/widget-header-tabs-color.css",
+    "colors/course-list-colors.css",
+    "colors/schedule-view-colors.css",
+    "colors/saved-schedules-colors.css",
+    "colors/settings-view-colors.css",
+    "colors/help-view-colors.css",
+    "colors/widget-footer-colors.css",
+    "colors/floating-button-colors.css",
+    "colors/hover-tooltip-colors.css",
+    "colors/settings-colors.css",
+  ];
+
+  const [html, ...cssParts] = await Promise.all([
+    fetch(htmlUrl).then((r) => r.text()),
+    ...cssFiles.map((file) => fetch(chrome.runtime.getURL(`dist/css/${file}`)).then((r) => r.text())),
+  ]);
+
+  const css = cssParts.join("\n");
+
+  shadowRoot.innerHTML = "";
+
+  const style = document.createElement("style");
+  style.textContent = css;
+  shadowRoot.appendChild(style);
+
+  if (!document.querySelector('link[href*="Material+Symbols"]')) {
+    const link = document.createElement("link");
+    link.rel = "stylesheet";
+    link.href =
+      "https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200";
+    document.head.appendChild(link);
+  }
+
+  const wrap = document.createElement("div");
+  wrap.innerHTML = html;
+  shadowRoot.appendChild(wrap);
+
+  const ui = {
+    mainPanel: shadowRoot.querySelector(".widget"),
+
+    root: shadowRoot,
+    floatingButton: shadowRoot.querySelector("#floating-button"),
+
+    tableBody: shadowRoot.querySelector("#course-list"),
+    tableHead: shadowRoot.querySelector("#course-sortbar"),
+
+    searchInput: shadowRoot.querySelector("#widget-search"),
+    addCourseButton: shadowRoot.querySelector("#widget-add-course"),
+    refreshButton: shadowRoot.querySelector("#widget-refresh"),
+    saveScheduleButton: shadowRoot.querySelector("#widget-save-schedule"),
+    clearButton: shadowRoot.querySelector("#widget-clear"),
+
+    exportDropdown: shadowRoot.querySelector("#widget-export"),
+    exportButton: shadowRoot.querySelector("#widget-export-button"),
+    exportMenu: shadowRoot.querySelector("#widget-export-menu"),
+
+    viewTabs: shadowRoot.querySelectorAll(".tab-button"),
+    views: shadowRoot.querySelectorAll(".widget-panel"),
+
+    scheduleGrid: shadowRoot.querySelector("#schedule-grid"),
+    scheduleTermPill: shadowRoot.querySelector("#schedule-term-pill"),
+    
+    savedDropdown: shadowRoot.querySelector("#schedule-saved-dropdown"),
+    savedMenu: shadowRoot.querySelector("#schedule-saved-menu"),
+
+    saveModal: shadowRoot.querySelector("#schedule-save-modal"),
+    saveModalTitle: shadowRoot.querySelector("#schedule-modal-title"),
+    saveModalMessage: shadowRoot.querySelector("#schedule-modal-message"),
+    saveModalField: shadowRoot.querySelector("#schedule-modal-field"),
+    saveModalInput: shadowRoot.querySelector("#schedule-modal-input"),
+    saveModalCancel: shadowRoot.querySelector("#schedule-save-modal .schedule-modal-cancel"),
+    saveModalConfirm: shadowRoot.querySelector("#schedule-save-modal .schedule-modal-confirm"),
+
+    schedulePickerModal: shadowRoot.querySelector("#schedule-picker-modal"),
+    schedulePickerTitle: shadowRoot.querySelector("#schedule-picker-title"),
+    schedulePickerMessage: shadowRoot.querySelector("#schedule-picker-message"),
+    schedulePickerList: shadowRoot.querySelector("#schedule-picker-list"),
+    schedulePickerCancel: shadowRoot.querySelector("#schedule-picker-modal .schedule-modal-cancel"),
+
+    loadingModal: shadowRoot.querySelector("#schedule-loading-modal"),
+    loadingText: shadowRoot.querySelector("#schedule-loading-text"),
+
+    helpButton: shadowRoot.querySelector(".help"),
+    settingsButton: shadowRoot.querySelector(".settings"),
+
+    footerAlert: shadowRoot.querySelector("#schedule-footer-notes"),
+
+    hoverTipsToggle: shadowRoot.querySelector("#setting-hover-tips"),
+    googleSignInButton: shadowRoot.querySelector("#setting-google-sign-in"),
+    googleSignOutButton: shadowRoot.querySelector("#setting-google-sign-out"),
+  };
+
+  debug.log({ id: "loadMainPanel.ui" }, "Loaded mainPanel UI refs", ui);
+
+  return ui;
+}
+
+

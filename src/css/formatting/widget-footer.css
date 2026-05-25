@@ -20,12 +20,20 @@
   border-bottom-right-radius: inherit;
 }
 
-.footer-alert {
-  font-size: 12px;
-  font-weight: 700;
+.footer-note-stack {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  min-width: 0;
 }
 
-.footer-alert.is-hidden {
+.footer-note-stack.is-hidden {
   display: none;
 }
 
+.footer-note {
+  font-size: 12px;
+  font-weight: 700;
+  line-height: 1.25;
+  overflow-wrap: anywhere;
+}

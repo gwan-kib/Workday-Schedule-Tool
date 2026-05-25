@@ -16,6 +16,8 @@
   --hex-neutral-1: #ffffff;
   --hex-neutral-2: #e5e7eb;
   --hex-neutral-3: #000000;
+  --hex-info-1: #2563eb;
+  --hex-success-1: #168347;
   --hex-danger-1: #e56b6b;
 
   /* Shared course palette (used by course list + schedule view) */
@@ -75,4 +77,12 @@
 
   --course-color-7-sub-bg: var(--course-color-7-chip);
   --course-color-7-sub-chip: var(--course-color-7-bg);
+
+  /* Pink */
+  --course-color-8-bg: #ffc4df;
+  --course-color-8-border: #db4d8c;
+  --course-color-8-chip: #ffe1ee;
+
+  --course-color-8-sub-bg: var(--course-color-8-chip);
+  --course-color-8-sub-chip: var(--course-color-8-bg);
 }

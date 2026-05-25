@@ -1,12 +1,22 @@
 {
   "manifest_version": 3,
   "name": "UBC Workday - Schedule Tool",
-  "version": "2.1.0",
+  "version": "3.0.0",
   "description": "A tool to make planning for your semester easier.",
+  "key": "MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAw9Z0q8gceaInZ6xke8hpzOhtnZdICi4gLHa8VNTgzvMudWxW+Jdi5akvFI0LMZHJIUlH0APRwYJ8p89ZFtEWlBwUlnK+V4Lv2KX58PFGVTPt2ejCCCq/wWb90a5sx6awY3eFlcnZj8b30RKNur3f7Nzyl8NOrNH5OrJLPbRiooyrdMPO8SYeKcceU3pGtZ/m0sLaNIrgB1JpiDyd22NplfRpJ/FCni/p9UGibbDUAWLBPYw+3RMDjvJRx++mcziO268U8AmjSy+g2KIgn7amMw0ivGHoF5ST7SmDfyuBDc8kwFeeHSYAiBdJQPjsXwvWjwgGmGB1iP7wabPjTYDtpQIDAQAB",
 
-  "permissions": ["storage"],
+  "permissions": ["storage", "identity"],
 
-  "host_permissions": ["https://*.myworkday.com/*", "https://www.ratemyprofessors.com/*"],
+  "oauth2": {
+    "client_id": "1020167103835-09hkiumhohjn120mkuta5q2uc723p874.apps.googleusercontent.com",
+    "scopes": ["https://www.googleapis.com/auth/calendar.events"]
+  },
+
+  "host_permissions": [
+    "https://*.myworkday.com/*",
+    "https://www.ratemyprofessors.com/*",
+    "https://www.googleapis.com/*"
+  ],
 
   "icons": {
     "16": "icon16.png",

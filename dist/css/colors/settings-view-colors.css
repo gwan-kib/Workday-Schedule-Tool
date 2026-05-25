@@ -22,24 +22,40 @@
   outline-color: var(--hex-brand-accent-6);
 }
 
-.widget-panel[data-panel="settings-panel"] .course-color-label {
-  color: var(--hex-brand-main-1);
+.widget-panel[data-panel="settings-panel"] .settings-google-actions .button {
+  background: var(--hex-brand-main-1);
+  color: var(--hex-brand-accent-1);
+  border-color: var(--hex-brand-main-1);
 }
 
-.widget-panel[data-panel="settings-panel"] .course-color-select {
+.widget-panel[data-panel="settings-panel"] .settings-google-actions .button:hover:not([disabled]) {
+  background: var(--hex-brand-main-3);
+}
+
+.widget-panel[data-panel="settings-panel"] .settings-google-actions .button[disabled] {
   background: var(--hex-neutral-1);
   color: var(--hex-brand-main-1);
   border-color: var(--hex-brand-accent-6);
 }
 
-.widget-panel[data-panel="settings-panel"] .course-color-select:focus-visible {
-  outline: 2px solid var(--hex-brand-accent-6);
-  outline-offset: 2px;
+.team-member-card {
+  background: var(--hex-neutral-1);
+  border-color: var(--hex-brand-accent-6);
 }
 
-.widget-panel[data-panel="settings-panel"] .course-color-swatch {
-  background: var(--hex-brand-accent-2);
+.team-social-button {
+  background: var(--hex-brand-accent-3);
+  color: var(--hex-brand-main-1);
   border-color: var(--hex-brand-accent-6);
+}
+
+.team-social-button:hover {
+  background: var(--hex-brand-accent-1);
+  border-color: var(--hex-brand-main-2);
+}
+
+.team-social-button:focus-visible {
+  outline-color: var(--hex-brand-accent-6);
 }
 
 .widget-panel[data-panel="settings-panel"] .settings-tooltip-toggle {

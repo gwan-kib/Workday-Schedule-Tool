@@ -1,47 +1,68 @@
-import { $$ } from "../utilities/dom.js";
 import { debugFor, debugLog } from "../utilities/debugTool.js";
-import { buildHeaderMaps, findWorkdayGrids } from "./grid.js";
-import { parseSectionLinkString } from "./parsers/sectionLinkInfo.js";
-import {
-  extractMeetingLines,
-  formatMeetingLineForPanel,
-  normalizeMeetingPatternsText,
-  extractStartDate,
-  isOnlineDelivery,
-} from "./parsers/meetingPatternsInfo.js";
-import { createRowCellReader } from "./rowCellReader.js";
+import { fetchCourseFromWorkdayId, parseWorkdayCourseIdFromAutomationId } from "./singleCourseImport.js";
 
 const debug = debugFor("courseExtraction");
 debugLog({ local: { courseExtraction: false } });
 
-function extractCoursesFromGrid(found) {
-  if (!found) return [];
+const SELECTED_COURSE_SELECTOR = '[data-automation-id^="selectedItem_15194$"]';
 
-  const headerMaps = buildHeaderMaps(found.root);
-  const courses = [];
+const readElementLabel = (el) =>
+  (
+    el?.getAttribute?.("data-automation-label") ||
+    el?.getAttribute?.("title") ||
+    el?.textContent ||
+    ""
+  )
+    .replace(/\s+/g, " ")
+    .trim();
 
-  debug.log({ id: "extractCoursesData.headerMaps" }, "Built header maps:", headerMaps);
+function getPromptLabel(selectedCourseEl) {
+  return readElementLabel(selectedCourseEl?.querySelector?.('[data-automation-id="promptOption"]')) || readElementLabel(selectedCourseEl);
+}
 
-  for (const row of found.rows) {
-    const c = extractFromRow(row, headerMaps);
-    if (c && (c.code || c.title) && Object.values(c).join("").trim()) courses.push(c);
+function courseKey(course) {
+  const id = String(course?.workdayCourseId || "").trim();
+  if (id) return `id:${id}`;
+
+  return ["code", "section_number"]
+    .map((key) =>
+      String(course?.[key] || "")
+        .replace(/\s+/g, " ")
+        .trim()
+        .toLowerCase(),
+    )
+    .join("|");
+}
+
+function removeDuplicateCourses(courses) {
+  const seen = new Set();
+  const uniqueCourses = [];
+
+  for (const course of courses || []) {
+    const key = courseKey(course);
+    if (!key || seen.has(key)) continue;
+
+    seen.add(key);
+    uniqueCourses.push(course);
   }
 
-  return removeDuplicateCourses(courses);
+  debug.log({ id: "removeDuplicateCourses" }, "Deduped courses from Workday IDs", {
+    inputCount: courses?.length || 0,
+    outputCount: uniqueCourses.length,
+    courseIds: uniqueCourses.map((course) => course.workdayCourseId).filter(Boolean),
+  });
+
+  return uniqueCourses;
 }
 
 function summarizeCourseNames(courses) {
   const seen = new Set();
   const names = [];
 
-  for (const course of courses) {
-    const code = String(course?.code || "").trim();
-    const label = code;
-
-    if (!label) continue;
-
+  for (const course of courses || []) {
+    const label = String(course?.code || "").trim();
     const key = label.toLowerCase();
-    if (seen.has(key)) continue;
+    if (!label || seen.has(key)) continue;
 
     seen.add(key);
     names.push(label);
@@ -50,219 +71,88 @@ function summarizeCourseNames(courses) {
   return names;
 }
 
-// Extracts courses from the Workday grids. Input: optional selector callback. Output: array of course objects or null on cancel.
-export async function extractCoursesData({ selectSchedule } = {}) {
-  debug.log({ id: "extractCoursesData.start" }, "Starting course extraction");
+function collectWorkdayCourseIdEntries(root = document) {
+  const selectedCourseEls = Array.from(root?.querySelectorAll?.(SELECTED_COURSE_SELECTOR) || []);
+  const seenIds = new Set();
+  const entries = [];
 
-  const found = findWorkdayGrids();
+  for (const selectedCourseEl of selectedCourseEls) {
+    const automationId = selectedCourseEl.getAttribute("data-automation-id") || "";
+    const courseId = parseWorkdayCourseIdFromAutomationId(automationId);
 
-  debug.log({ id: "extractCoursesData.tables" }, "findWorkdayGrid() result:", found);
+    if (!courseId || seenIds.has(courseId)) continue;
+    seenIds.add(courseId);
 
-  const candidates = found
-    .map((grid, index) => {
-      const courses = extractCoursesFromGrid(grid);
-      if (!courses.length) return null;
+    entries.push({
+      courseId,
+      automationId,
+      label: getPromptLabel(selectedCourseEl),
+      element: selectedCourseEl,
+    });
+  }
 
-      return {
-        id: `schedule-${index + 1}`,
-        title: `Schedule ${index + 1}`,
-        courses,
-        courseNames: summarizeCourseNames(courses),
-      };
-    })
-    .filter(Boolean);
+  debug.log({ id: "collectWorkdayCourseIdEntries.done" }, "Collected Workday course IDs", {
+    count: entries.length,
+    entries: entries.map(({ courseId, automationId, label }) => ({ courseId, automationId, label })),
+  });
 
-  debug.log(
-    { id: "extractCoursesData.candidates" },
-    "Parsable schedule candidates found:",
-    candidates.map((candidate) => ({
-      id: candidate.id,
-      title: candidate.title,
-      courseCount: candidate.courses.length,
-      courseNames: candidate.courseNames,
-    })),
-  );
+  return entries;
+}
 
-  if (!candidates.length) {
-    debug.log({ id: "extractCoursesData.done" }, "Extraction complete:", []);
+async function extractCourseFromEntry(entry) {
+  try {
+    const course = await fetchCourseFromWorkdayId(entry.courseId);
+    debug.log({ id: "extractCourseFromEntry.jsonSuccess" }, "Extracted course from Workday JSON", {
+      courseId: entry.courseId,
+      code: course?.code,
+      section: course?.section_number,
+    });
+    return course;
+  } catch (error) {
+    debug.warn({ id: "extractCourseFromEntry.failed" }, "Could not extract course from Workday JSON", {
+      courseId: entry.courseId,
+      label: entry.label,
+      error: String(error?.message || error),
+    });
+    return null;
+  }
+}
+
+// Extracts courses from Workday by collecting section IDs and fetching their JSON details.
+// Input: optional root. Output: array of course objects.
+export async function extractCoursesData({ root = document } = {}) {
+  debug.log({ id: "extractCoursesData.start" }, "Starting course-ID based extraction");
+
+  const entries = collectWorkdayCourseIdEntries(root);
+  if (!entries.length) {
+    debug.warn({ id: "extractCoursesData.noCourseIds" }, "No Workday course IDs were found on the page");
     return [];
   }
 
-  if (candidates.length === 1 || typeof selectSchedule !== "function") {
-    debug.log({ id: "extractCoursesData.done" }, "Extraction complete:", candidates[0].courses);
-    return candidates[0].courses;
-  }
+  const results = await Promise.allSettled(entries.map((entry) => extractCourseFromEntry(entry)));
+  const courses = results
+    .map((result, index) => {
+      if (result.status === "fulfilled") return result.value;
 
-  const selectedId = await selectSchedule(
-    candidates.map((candidate) => ({
-      id: candidate.id,
-      title: candidate.title,
-      courseNames: candidate.courseNames,
-      courseCount: candidate.courses.length,
-    })),
-  );
-
-  if (!selectedId) {
-    debug.log({ id: "extractCoursesData.cancelled" }, "Schedule selection cancelled");
-    return null;
-  }
-
-  const selected = candidates.find((candidate) => candidate.id === selectedId);
-  const extractedCourses = selected?.courses || null;
-
-  debug.log({ id: "extractCoursesData.done" }, "Extraction complete:", extractedCourses);
-
-  return extractedCourses;
-}
-
-// Deduplicates courses by code/title/section. Input: array of courses. Output: array of unique courses.
-function removeDuplicateCourses(allCourses) {
-  const key = (course) => [course.code, course.title, course.section_number].join("|").toLowerCase();
-  const seen = new Set();
-  const uniqueCourses = [];
-
-  for (const course of allCourses) {
-    const courseKey = key(course);
-    if (!seen.has(courseKey)) {
-      seen.add(courseKey);
-      uniqueCourses.push(course);
-    }
-  }
-
-  debug.log({ id: "removeDuplicateCourses" }, "Deduped courses:", uniqueCourses);
-
-  return uniqueCourses;
-}
-
-// Extracts a course from a grid row. Input: row element and header maps. Output: course object or null.
-export function extractFromRow(row, headerMaps) {
-  const { getCellByHeader, readCellTextByHeader } = createRowCellReader(row, headerMaps);
-
-  debug.log({ id: "extractFromRow.start" }, "Extracting row");
-
-  const allLinksInRow = $$(row, '[data-automation-id="promptOption"]');
-
-  const sectionLinkEl = allLinksInRow.find((el) => {
-    const text =
-      el.getAttribute("data-automation-label") ||
-      el.getAttribute("title") ||
-      el.getAttribute("aria-label") ||
-      el.textContent ||
-      "";
-    return /^[A-Z][A-Z0-9_]*\s*\d{2,3}-/.test(text);
-  });
-
-  const sectionLinkText =
-    (sectionLinkEl &&
-      (sectionLinkEl.getAttribute("data-automation-label") ||
-        sectionLinkEl.getAttribute("title") ||
-        sectionLinkEl.getAttribute("aria-label") ||
-        sectionLinkEl.textContent)) ||
-    "";
-
-  const sectionDetails = parseSectionLinkString(sectionLinkText);
-  if (!sectionDetails) {
-    debug.warn({ id: "extractFromRow.skip" }, "Skipping row: no parsable promptOption", {
-      promptOptions: allLinksInRow,
-      sectionLinkString: sectionLinkText,
-    });
-    return null;
-  }
-
-  debug.log({ id: "extractFromRow.sectionLink" }, "Section link:", {
-    promptOptions: allLinksInRow,
-    hasMatch: !!sectionLinkEl,
-    sectionLinkString: sectionLinkText,
-  });
-
-  const instructionalFormatText = readCellTextByHeader("instructionalFormat");
-  const startDateText = readCellTextByHeader("startDate");
-
-  const code = sectionDetails.code;
-  const title = sectionDetails.title;
-  const section_number = sectionDetails.section_number;
-
-  debug.log({ id: "extractFromRow.coreParse" }, "Core parse result:", {
-    code,
-    title,
-    section_number,
-  });
-
-  const labLike = (s) => /\b(laboratory)\b/i.test(String(s || ""));
-  const seminarLike = (s) => /\bseminar\b/i.test(String(s || ""));
-  const discussionLike = (s) => /\bdiscussion\b/i.test(String(s || ""));
-
-  const getInstructionalFormatAbbr = (text) => {
-    if (labLike(text)) return "Lab";
-    if (seminarLike(text)) return "Seminar";
-    if (discussionLike(text)) return "Discussion";
-    return (text || "").trim();
-  };
-
-  const isLab = labLike(instructionalFormatText);
-  const isSeminar = seminarLike(instructionalFormatText);
-  const isDiscussion = discussionLike(instructionalFormatText);
-
-  let instructor = "N/A";
-
-  if (!isLab && !isSeminar && !isDiscussion) {
-    instructor = readCellTextByHeader("instructor");
-
-    if (!instructor) {
-      debug.warn({ id: "extractFromRow.skip" }, "Skipping row: missing instructor cell", {
-        code,
-        section_number,
+      const entry = entries[index];
+      debug.warn({ id: "extractCoursesData.entryRejected" }, "Course extraction promise rejected", {
+        courseId: entry?.courseId,
+        error: String(result.reason?.message || result.reason),
       });
       return null;
-    }
-  }
+    })
+    .filter(Boolean);
 
-  const meetingEl = getCellByHeader("meeting");
-  if (!meetingEl) {
-    debug.warn({ id: "extractFromRow.skip" }, "Skipping row: missing meeting cell", {
-      code,
-      section_number,
-    });
-    return null;
-  }
+  const extractedCourses = removeDuplicateCourses(courses);
 
-  const meetingLines = extractMeetingLines(meetingEl) || [];
-  if (!meetingLines.length) {
-    debug.warn({ id: "extractFromRow.skip" }, "Skipping row: no meeting lines found in meeting cell", {
-      code,
-      section_number,
-    });
-    return null;
-  }
+  debug.log({ id: "extractCoursesData.done" }, "Course-ID extraction complete", {
+    requestedCount: entries.length,
+    extractedCount: extractedCourses.length,
+    failedIds: entries
+      .filter((entry) => !extractedCourses.some((course) => String(course.workdayCourseId) === String(entry.courseId)))
+      .map((entry) => entry.courseId),
+    courseNames: summarizeCourseNames(extractedCourses),
+  });
 
-  const meetingObj = formatMeetingLineForPanel(meetingLines[0]);
-
-  const deliveryModeEl = getCellByHeader("deliveryMode");
-
-  const isOnline = deliveryModeEl ? isOnlineDelivery(deliveryModeEl) : false;
-
-  if (isOnline) meetingObj.location = "Online";
-
-  let meeting = [meetingObj.days, meetingObj.time].filter(Boolean).join(" | ");
-  meeting += `\n${meetingObj.location || (isOnline ? "Online" : "")}`;
-
-  const startDate = extractStartDate(meetingLines[0]) || extractStartDate(startDateText);
-
-  const result = {
-    code,
-    title,
-    section_number,
-    instructor,
-    meeting: normalizeMeetingPatternsText(meeting),
-    instructionalFormat: getInstructionalFormatAbbr(instructionalFormatText),
-    startDate,
-    meetingLines: meetingLines,
-    isLab,
-    isSeminar,
-    isDiscussion,
-  };
-
-  debug.log({ id: "extractFromRow.result" }, "Extracted course:", result);
-
-  return result;
+  return extractedCourses;
 }

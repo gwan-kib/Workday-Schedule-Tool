@@ -57,6 +57,48 @@
   inset: 0;
 }
 
+.schedule-loading-modal {
+  cursor: progress;
+}
+
+.schedule-loading-indicator {
+  position: relative;
+
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+
+  min-width: min(240px, 82%);
+  padding: 16px 18px;
+
+  border: 2px solid;
+  border-radius: 16px;
+
+  font-size: 15px;
+  font-weight: 700;
+
+  z-index: 1;
+}
+
+.schedule-loading-spinner {
+  font-size: 30px;
+  line-height: 1;
+  animation: scheduleLoadingSpin 0.9s linear infinite;
+}
+
+.schedule-loading-text {
+  line-height: 1.25;
+}
+
+@keyframes scheduleLoadingSpin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
 .dialog-container {
   position: relative;
 
@@ -119,6 +161,7 @@
   margin: 0;
   font-size: 13px;
   line-height: 1.4;
+  white-space: pre-line;
 }
 
 .schedule-modal-field {

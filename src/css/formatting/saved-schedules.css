@@ -59,7 +59,7 @@
   flex-direction: column;
   gap: 6px;
 
-  padding: 6px 10px;
+  padding: 8px 8px;
   border: 2px solid transparent;
   border-radius: 10px;
 
@@ -124,6 +124,7 @@
 }
 
 .schedule-saved-action.star,
+.schedule-saved-action.rename,
 .schedule-saved-action.delete {
   width: 27px;
   height: 27px;
@@ -141,16 +142,19 @@
 }
 
 .schedule-saved-action.star .material-symbols-rounded,
+.schedule-saved-action.rename .material-symbols-rounded,
 .schedule-saved-action.delete .material-symbols-rounded {
   font-size: 18px;
 }
 
 .schedule-saved-action.star,
+.schedule-saved-action.rename,
 .schedule-saved-action.delete {
   opacity: 0.7;
 }
 
 .schedule-saved-action.star:hover,
+.schedule-saved-action.rename:hover,
 .schedule-saved-action.delete:hover,
 .schedule-saved-action.star.is-favorite {
   opacity: 1;

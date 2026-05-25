@@ -104,7 +104,9 @@
   color: var(--hex-brand-main-1);
 }
 
-.export-option:hover {
+.export-option:hover,
+.export-option:focus-visible {
   background: var(--hex-brand-accent-6);
+  color: var(--hex-brand-accent-1);
 }
 

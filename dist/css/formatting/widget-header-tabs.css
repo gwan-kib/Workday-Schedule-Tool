@@ -108,7 +108,7 @@
   flex-direction: column;
   gap: 6px;
 
-  min-width: 160px;
+  min-width: 190px;
 
   padding: 8px;
   border-radius: 12px;
@@ -122,6 +122,9 @@
 }
 
 .export-option {
+  display: inline-flex;
+  align-items: center;
+  gap: 2px;
   padding: 8px 10px;
   border-radius: 10px;
   border: none;
@@ -133,6 +136,13 @@
   text-align: left;
 
   background: var(--hex-brand-accent-4);
+
+  transition: all 0.2s ease;
+}
+
+.export-option .material-symbols-rounded {
+  font-size: 16px;
+  line-height: 1;
 }
 
 /* Help button */
@@ -212,7 +222,7 @@
 }
 
 #widget-search {
-  width: 230px;
+  width: 210px;
 
   padding: 6px 10px;
   padding-left: 32px;

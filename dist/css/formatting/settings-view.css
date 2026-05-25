@@ -47,68 +47,113 @@
   line-height: 1.35;
 }
 
+.widget-panel[data-panel="settings-panel"] .settings-google-actions {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.widget-panel[data-panel="settings-panel"] .settings-google-actions .button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  min-height: 32px;
+  padding: 7px 12px;
+  border: 1px solid;
+  border-radius: 10px;
+  font-size: 12px;
+  font-weight: 700;
+  opacity: 1;
+}
+
+.widget-panel[data-panel="settings-panel"] .settings-google-actions .button[disabled] {
+  cursor: default;
+}
+
+.widget-panel[data-panel="settings-panel"] .settings-google-actions .button .material-symbols-rounded {
+  font-size: 17px;
+  line-height: 1;
+}
+
+.widget-panel[data-panel="settings-panel"] .settings-google-actions .is-hidden {
+  display: none;
+}
+
 .settings-field--github-link {
   display: flex;
   flex-direction: column;
-  align-items: center;
 }
 
 .settings-section--team {
   display: flex;
   flex-direction: column;
-  align-items: center;
+  align-items: stretch;
+  width: 100%;
 }
 
 .team-links {
-  display: flex;
-  flex-direction: row;
-  gap: 8px;
-}
-
-.widget-panel[data-panel="settings-panel"] .course-color-grid {
   display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
   gap: 8px;
-  margin-bottom: 10px;
+  width: 100%;
 }
 
-.widget-panel[data-panel="settings-panel"] .course-color-row {
+.team-member-card {
   display: flex;
-  align-items: center;
+  flex-direction: column;
   gap: 10px;
-}
-
-.widget-panel[data-panel="settings-panel"] .course-color-label {
-  font-size: 13px;
-  font-weight: 600;
-}
-
-.widget-panel[data-panel="settings-panel"] .course-color-control {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-}
-
-.widget-panel[data-panel="settings-panel"] .course-color-select {
-  min-width: 100px;
-  padding: 6px;
+  align-items: stretch;
+  padding: 10px;
+  border: 1px solid;
   border-radius: 8px;
-  border: 1px solid transparent;
-  font-size: 12px;
-  font-weight: 600;
-  cursor: pointer;
 }
 
-.widget-panel[data-panel="settings-panel"] .course-color-swatch {
-  width: 24px;
-  height: 24px;
-  border-radius: 7px;
-  border: 2px solid transparent;
+.team-member-name {
+  font-size: 13px;
+  font-weight: 700;
+  line-height: 1.25;
+  text-align: center;
 }
 
-.widget-panel[data-panel="settings-panel"] .course-color-reset {
-  align-self: flex-start;
-  padding: 6px 12px;
+.team-social-links {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 6px;
+}
+
+.team-social-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  min-width: 0;
+  padding: 8px 6px;
+  border: 1px solid;
+  border-radius: 8px;
+  text-decoration: none;
   font-size: 12px;
+  font-weight: 700;
+  line-height: 1;
+  transition: all 0.12s ease;
+}
+
+.team-social-icon {
+  width: 16px;
+  height: 16px;
+  flex: 0 0 auto;
+  fill: currentColor;
+}
+
+.team-social-button:hover {
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.08);
+  transform: translateY(-1px);
+}
+
+.team-social-button:focus-visible {
+  outline: 2px solid;
+  outline-offset: 2px;
 }
 
 .widget-panel[data-panel="settings-panel"] .settings-tooltip-toggle {
